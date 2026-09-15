@@ -36,10 +36,10 @@ Un nouveau sujet crée une nouvelle `<section>` avec son propre `<h2>`, jamais u
 ## Règle : les délais de la FAQ recopient le tableau de l'article 5 des CGV
 
 // MAUVAIS
-<p>Livraison en 4 à 7 jours ouvrés en France métropolitaine, en Belgique et en Suisse.</p>
+<p>Livraison en 4 à 10 jours ouvrés en France métropolitaine, en Belgique et en Suisse.</p>   (Luxembourg oublié, pas de dédouanement)
 
 // CORRECT
-<p>Expédition sous 48 heures ouvrées. Livraison en 4 à 7 jours ouvrés en France métropolitaine, 4 à 8 jours en Belgique, 5 à 10 jours en Suisse hors dédouanement.</p>
+<p>Expédition sous 48 heures ouvrées, livraison en 4 à 10 jours ouvrés en France métropolitaine, en Belgique, au Luxembourg et en Suisse (hors délais de dédouanement).</p>
 
 ## Anti-patterns à flag systématiquement
 - Prix écrit ailleurs qu'en 129 € (ou modifié sans les CGV)

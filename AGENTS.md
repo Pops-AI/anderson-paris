@@ -45,6 +45,10 @@ anderson-paris/
 ├── mentions-legales.html   Éditeur, hébergeur, DEEE, médiation
 ├── confidentialite.html    RGPD
 ├── merci.html              Confirmation après paiement Stripe (même squelette que les pages légales)
+├── guide-rituel.html       Guide d'utilisation, lien envoyé par les emails Klaviyo (même squelette, noindex)
+├── guide-serums.html       Guide des sérums compatibles (même squelette, noindex)
+├── calendrier-rituel.html  Calendrier des 12 semaines à imprimer (même squelette, noindex)
+├── api/stripe-webhook.js   Transmet chaque commande Stripe à Klaviyo (flow « Commande Passée »)
 ├── suivi.js                Traceurs soumis au consentement, partagés par index.html et merci.html
 ├── style.css               Styles des pages légales et de merci.html
 ├── images/                 Toutes les images du site

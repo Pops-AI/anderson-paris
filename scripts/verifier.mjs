@@ -13,9 +13,10 @@ const MODE_HOOK = process.argv.includes("--hook");
 const REFERENCE = {
   prix: 129,
   pays: ["France", "Belgique", "Luxembourg", "Suisse"],
+  delai: "4 à 10 jours ouvrés",
 };
 
-const PAGES = ["index.html", "cgv.html", "retractation.html", "mentions-legales.html", "confidentialite.html", "merci.html"];
+const PAGES = ["index.html", "cgv.html", "retractation.html", "mentions-legales.html", "confidentialite.html", "merci.html", "guide-rituel.html", "guide-serums.html", "calendrier-rituel.html"];
 const PAGES_LEGALES = PAGES.filter((p) => p !== "index.html");
 const FEUILLES = ["style.css"];
 const SCRIPTS = ["suivi.js"];
@@ -134,6 +135,15 @@ if (contenus["cgv.html"]) {
   const texte = contenus["cgv.html"];
   for (const pays of REFERENCE.pays) {
     if (!new RegExp(`<th>${pays}[^<]*</th>`).test(texte)) signaler(erreurs, "cgv.html", texte, null, `délai de livraison absent du tableau de l'article 5 : ${pays}`);
+  }
+}
+
+for (const page of ["index.html", "cgv.html", "merci.html"].filter((p) => contenus[p])) {
+  const texte = contenus[page];
+  const delais = [...texte.matchAll(/\d+ à \d+ jours ouvrés/g)];
+  if (delais.length === 0) signaler(erreurs, page, texte, null, `délai de livraison introuvable (${REFERENCE.delai})`);
+  for (const m of delais) {
+    if (m[0] !== REFERENCE.delai) signaler(erreurs, page, texte, m.index, `délai « ${m[0]} » différent de la référence « ${REFERENCE.delai} »`);
   }
 }
 
