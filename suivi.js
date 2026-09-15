@@ -41,7 +41,14 @@ var Suivi = (function(){
       // Masquage : aucun texte saisi, aucun e-mail, aucune adresse ne sort du navigateur.
       mask_all_text: false,
       session_recording: { maskAllInputs: true, maskTextSelector: "[data-prive]" },
-      autocapture: { url_allowlist: [], dom_event_allowlist: ["click"] },
+      // Autocapture limité aux clics sur les éléments interactifs : assez pour
+      // les heatmaps et les parcours, sans enregistrer chaque survol.
+      // Pas d'url_allowlist : une liste vide couperait l'autocapture partout.
+      autocapture: {
+        dom_event_allowlist: ["click"],
+        element_allowlist: ["a", "button"],
+        element_attribute_ignorelist: ["aria-label", "title"]
+      },
       capture_pageview: true,
       disable_surveys: true
     });

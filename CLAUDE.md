@@ -8,14 +8,18 @@ Livraison étendue au Luxembourg : terminé (hero, FAQ, CGV articles 3 et 5).
 Délai retenu pour les quatre pays : 4 à 10 jours ouvrés (Suisse : hors dédouanement). Décision du 15 septembre 2026, remplace 4 à 7 jours.
 
 Suivi des ventes pour les publicités : code prêt, en attente de configuration.
-- Bandeau de consentement (index.html) + Google Analytics + pixel Meta (suivi.js).
-- Page /merci : achat envoyé à Google Analytics uniquement.
+- Bandeau de consentement (index.html) + PostHog + pixel Meta (suivi.js).
+- Page /merci : achat envoyé à PostHog (et à Google Analytics s'il est un jour activé).
 - Achats vers Meta : application Stripe installée par la gérance. Ne jamais renvoyer l'événement Purchase
   à Meta depuis le site (double comptage).
 À fournir, jamais à inventer :
 - Pixel Meta actif (ID 1660164462081161, le même que celui relié à l'application Stripe).
-- `ID_GOOGLE_ANALYTICS` dans suivi.js (vaut « A_REMPLACER » : rien ne se charge). À l'activation, réafficher
-  la case « Mesure d'audience » du bandeau et remettre Google Analytics dans confidentialite.html et le texte du bandeau.
+- `ID_POSTHOG` dans suivi.js (vaut « A_REMPLACER » : rien ne se charge). Clé publique de projet,
+  commence par `phc_`, à récupérer dans PostHog > Settings > Project > Project API Key.
+  Projet hébergé dans l'Union européenne (`eu.i.posthog.com`).
+- `ID_GOOGLE_ANALYTICS` dans suivi.js : **volontairement laissé à « A_REMPLACER »**. PostHog couvre la
+  mesure d'audience, les parcours, les enregistrements et les tests A/B. Deux outils qui comptent les
+  mêmes visites alourdiraient la page et donneraient deux chiffres divergents. Décision du 15 septembre 2026.
 - Nom de l'application Stripe, données qu'elle transmet à Meta et respect du refus des cookies :
   à reporter dans confidentialite.html (ligne « Mesure des achats publicitaires »).
 - Stripe (après mise en ligne de /merci) : redirection du lien de paiement vers
