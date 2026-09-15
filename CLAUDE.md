@@ -17,6 +17,10 @@ Suivi des ventes pour les publicités : code prêt, en attente de configuration.
 - `ID_POSTHOG` dans suivi.js (vaut « A_REMPLACER » : rien ne se charge). Clé publique de projet,
   commence par `phc_`, à récupérer dans PostHog > Settings > Project > Project API Key.
   Projet hébergé dans l'Union européenne (`eu.i.posthog.com`).
+  À l'activation, dans le même commit : retirer l'attribut `hidden` de la case « Mesure d'audience »
+  du bandeau (index.html) et remplacer le texte du bandeau par « Nous mesurons l'audience du site
+  et l'efficacité de nos publicités ». Tant que la clé n'est pas posée, la case reste masquée :
+  le bandeau ne doit jamais annoncer une mesure qui n'a pas lieu.
 - `ID_GOOGLE_ANALYTICS` dans suivi.js : **volontairement laissé à « A_REMPLACER »**. PostHog couvre la
   mesure d'audience, les parcours, les enregistrements et les tests A/B. Deux outils qui comptent les
   mêmes visites alourdiraient la page et donneraient deux chiffres divergents. Décision du 15 septembre 2026.
