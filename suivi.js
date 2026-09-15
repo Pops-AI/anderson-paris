@@ -2,7 +2,7 @@
 // Rien ne se charge tant qu'un identifiant vaut A_REMPLACER, ni sans le consentement donné dans le bandeau.
 var Suivi = (function(){
   var ID_GOOGLE_ANALYTICS = "A_REMPLACER";
-  var ID_PIXEL_META = "A_REMPLACER";
+  var ID_PIXEL_META = "1660164462081161";
   var PRIX = 129;
   var CLE = "ap-consentement", SIX_MOIS = 182 * 24 * 3600 * 1000;
   var ga = ID_GOOGLE_ANALYTICS.indexOf("A_REMPLACER") === -1;

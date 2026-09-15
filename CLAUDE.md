@@ -13,7 +13,9 @@ Suivi des ventes pour les publicités : code prêt, en attente de configuration.
 - Achats vers Meta : application Stripe installée par la gérance. Ne jamais renvoyer l'événement Purchase
   à Meta depuis le site (double comptage).
 À fournir, jamais à inventer :
-- `ID_GOOGLE_ANALYTICS` et `ID_PIXEL_META` dans suivi.js (tant qu'ils valent « A_REMPLACER », rien ne se charge).
+- Pixel Meta actif (ID 1660164462081161, le même que celui relié à l'application Stripe).
+- `ID_GOOGLE_ANALYTICS` dans suivi.js (vaut « A_REMPLACER » : rien ne se charge). À l'activation, réafficher
+  la case « Mesure d'audience » du bandeau et remettre Google Analytics dans confidentialite.html et le texte du bandeau.
 - Nom de l'application Stripe, données qu'elle transmet à Meta et respect du refus des cookies :
   à reporter dans confidentialite.html (ligne « Mesure des achats publicitaires »).
 - Stripe (après mise en ligne de /merci) : redirection du lien de paiement vers
