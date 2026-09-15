@@ -1,31 +1,21 @@
-# Anderson Paris — contexte projet
+# Anderson Paris — Contexte Claude Code
 
-## La marque
-DNVB beauty-tech française. Maison anonyme, aucun fondateur incarné.
-Communications signées « Anderson Paris » ou « nous », jamais un prénom.
-Esthétique : Vogue clinique suisse. Références Aesop, Byredo, Augustinus Bader.
-Cible : femmes 35-55 ans, France, Belgique, Luxembourg, Suisse.
+@AGENTS.md
 
-## Le produit
-Lumina Regard — appareil de soin du CONTOUR DES YEUX (jamais visage entier).
-129 €, achat unique. LED 660 nm, micro-courant, chaleur 36-40 °C,
-vibration, tête articulée à 270°. 4 modes. Rituel 6 min/jour.
-Ne pas confondre avec « Lumina Pro », ancien produit abandonné
-(630 nm, visage entier, 8000 RPM) — toute mention est une erreur.
+## Chantier en cours
 
-## Design system
---albatre #F5F0EB · --papier #FBF9F6 · --rose-gold #C9A87C
---anthracite #3A3A3A · --encre #232323 · --ligne #DDD5CB
-Polices : Bodoni Moda (titres), Jost 300 (texte). Aucun arrondi, nulle part.
-Style éditorial, beaucoup de blanc, une seule idée par section.
+Livraison étendue au Luxembourg (confirmé).
+- Fait : hero de index.html, article 3 des CGV.
+- Reste : délai Luxembourg dans le tableau de l'article 5 des CGV (délai à obtenir, ne pas l'inventer).
+- Reste : FAQ « Quels sont les délais de livraison ? » de index.html alignée sur le tableau CGV, pays par pays.
 
-## Stack
-Site statique HTML/CSS, aucun framework, aucune dépendance.
-index.html (CSS inline) + style.css (pages légales) + vercel.json.
-Images dans /images/. Hébergé sur Vercel, déploiement auto à chaque push.
-Encaissement : Stripe Payment Link. Pas de panier, pas de back-end.
+À compléter avant la première vente (valeurs à demander, jamais à inventer) :
+- Pied de page de index.html : « SIREN [à compléter] — [adresse à compléter] ». Les vraies valeurs sont dans mentions-legales.html.
+- mentions-legales.html : téléphone, adresse Vercel, médiateur de la consommation, IDU DEEE et IDU batteries.
+- cgv.html article 5 : entrepôt d'expédition réel.
 
 ## Règles de contenu — non négociables
+
 - Aucune preuve sociale inventée : pas d'avis, pas de « X clientes »,
   pas d'étude clinique. Zéro cliente à ce jour.
 - Aucune allégation de fabrication ni de conception. Le produit est sourcé.
@@ -36,6 +26,42 @@ Encaissement : Stripe Payment Link. Pas de panier, pas de back-end.
 - Visuels d'ambiance générés par IA : mention obligatoire en pied de page.
 
 ## Cohérence à maintenir
+
 Toute modification du prix, des délais, de la durée du rituel ou des
 garanties doit être répercutée sur index.html ET cgv.html ET
 retractation.html ET mentions-legales.html.
+Mettre aussi à jour l'objet REFERENCE en tête de scripts/verifier.mjs.
+Commande dédiée : /changer-valeur.
+
+## Boucle de vérification
+
+Après toute modification : `node scripts/verifier.mjs` doit afficher « OK ».
+Les lignes « A COMPLETER » sont des avertissements, pas des erreurs.
+Un hook lance déjà la vérification après chaque Edit/Write sur une page :
+si le hook renvoie une erreur, la corriger avant de passer à la suite.
+Pour un changement visuel, lancer `node scripts/serveur.mjs` et contrôler
+la page à 400 px et à 1280 px de large.
+
+## Code Review Rules (session + CI)
+
+### Bloquant
+- Violation d'une règle de contenu ci-dessus -> BLOQUANT
+- Mention de Lumina Pro, 630 nm, 8000 RPM ou du visage entier -> BLOQUANT
+- Prix, délai, durée du rituel ou garantie modifié sur une page sans les autres -> BLOQUANT
+- `border-radius` non nul, couleur hors palette, police autre que Bodoni Moda / Jost -> BLOQUANT
+- Framework, dépendance npm, script tiers ou tracker ajouté -> BLOQUANT
+- Lien de paiement Stripe modifié ou supprimé -> CRITICAL, à signaler explicitement
+- Clé, token ou secret en clair -> CRITICAL
+- `node scripts/verifier.mjs` en erreur -> BLOQUANT
+
+### À signaler
+- Texte signé d'un prénom, tutoiement de la cliente, anglicisme évitable
+- Image sans `alt`, sans `width`/`height`, ou hors de /images/
+- Plus d'une idée par section sur index.html
+- Style inline nouveau alors qu'une classe existe déjà
+- Valeur « [à compléter] » inventée au lieu d'être demandée
+
+### Format de réponse
+- Violation -> commentaire inline + correction proposée
+- Tout conforme -> « [OK] RAS - conforme aux standards du projet. »
+- Direct. Pas de blabla. En français.
