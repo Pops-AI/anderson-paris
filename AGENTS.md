@@ -23,9 +23,10 @@ Ne pas confondre avec « Lumina Pro », ancien produit abandonné
 |---|---|
 | Pages | HTML statique, aucun framework, aucune dépendance |
 | Styles | CSS inline dans index.html ; style.css partagé par les pages légales |
-| Script | Un seul `<script>` en bas de index.html (lien Stripe + barre d'achat mobile) |
+| Script | `suivi.js` (Google Analytics + pixel Meta, soumis au consentement) + un `<script>` en bas de index.html (lien Stripe, bandeau, barre d'achat mobile) et de merci.html (achat) |
 | Polices | Google Fonts : Bodoni Moda (titres), Jost 300 (texte) |
-| Paiement | Stripe Payment Link. Pas de panier, pas de back-end |
+| Paiement | Stripe Payment Link, retour sur /merci. Pas de panier |
+| Serveur | Une seule fonction Vercel, sans dépendance : `api/stripe-webhook.js` (achats vers l'API Conversions de Meta) |
 | Hébergement | Vercel, `cleanUrls` (/cgv sert cgv.html), déploiement auto à chaque push |
 | Outillage | Node (scripts/*.mjs), sans package.json ni node_modules |
 
@@ -44,7 +45,10 @@ anderson-paris/
 ├── retractation.html       Rétractation, retours, formulaire type
 ├── mentions-legales.html   Éditeur, hébergeur, DEEE, médiation
 ├── confidentialite.html    RGPD
-├── style.css               Styles des 4 pages légales uniquement
+├── merci.html              Confirmation après paiement Stripe (même squelette que les pages légales)
+├── suivi.js                Traceurs soumis au consentement, partagés par index.html et merci.html
+├── api/stripe-webhook.js   Webhook Stripe -> API Conversions Meta
+├── style.css               Styles des pages légales et de merci.html
 ├── images/                 Toutes les images du site
 ├── vercel.json             cleanUrls
 ├── .vercelignore           Fichiers internes jamais publiés
