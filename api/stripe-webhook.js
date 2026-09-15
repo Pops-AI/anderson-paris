@@ -58,7 +58,7 @@ function verifieSignature(rawBody, header, secret, toleranceSec = 300) {
  * vivre la relation client, ne doit jamais tomber parce que la base de
  * mesure est absente.
  */
-async function enregistrerDansSupabase(session, evenement, montant, devise, adresse) {
+async function enregistrerDansSupabase(session, evenement, montantCentimes, devise, adresse) {
   const url = process.env.SUPABASE_URL;
   const cle = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !cle) return { ok: false, raison: 'non configuré' };
@@ -91,7 +91,7 @@ async function enregistrerDansSupabase(session, evenement, montant, devise, adre
         store_id: 'anderson-paris',
         external_id: session.id,
         status: 'paid',
-        amount_cents: Math.round(montant * 100),
+        amount_cents: montantCentimes,
         currency: devise,
         customer_email: session.customer_details?.email || null,
         country: adresse.country || null,
@@ -113,7 +113,7 @@ async function enregistrerDansSupabase(session, evenement, montant, devise, adre
         external_id: evenement.id || session.id,
         type: 'purchase',
         payload: {
-          amount_cents: Math.round(montant * 100),
+          amount_cents: montantCentimes,
           currency: devise,
           country: adresse.country || null,
           payment_method: session.payment_method_types?.[0] || null,
@@ -297,7 +297,7 @@ export async function POST(request) {
   // Un échec ici ne doit pas provoquer de renvoi par Stripe : cela rejouerait
   // l'événement Klaviyo et risquerait un second e-mail à la cliente.
   const supabase = await enregistrerDansSupabase(
-    session, evenement, montant, devise, adresse,
+    session, evenement, session.amount_total ?? 0, devise, adresse,
   ).catch((e) => ({ ok: false, raison: e.message }));
 
   console.log('Mesure', session.id, JSON.stringify({ supabase }));
