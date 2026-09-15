@@ -5,7 +5,7 @@
 ## Chantier en cours
 
 Livraison étendue au Luxembourg : terminé (hero, FAQ, CGV articles 3 et 5).
-Délai retenu pour les quatre pays : 4 à 7 jours ouvrés (Suisse : hors dédouanement). Décision définitive.
+Délai retenu pour les quatre pays : 4 à 10 jours ouvrés (Suisse : hors dédouanement). Décision du 15 septembre 2026, remplace 4 à 7 jours.
 
 Suivi des ventes pour les publicités : code prêt, en attente de configuration.
 - Bandeau de consentement (index.html) + Google Analytics + pixel Meta (suivi.js).
