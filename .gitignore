@@ -1,0 +1,6 @@
+CLAUDE.local.md
+.claude/settings.local.json
+.vercel
+node_modules
+.DS_Store
+Thumbs.db
