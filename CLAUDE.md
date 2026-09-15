@@ -48,7 +48,8 @@ la page à 400 px et à 1280 px de large.
 - Mention de Lumina Pro, 630 nm, 8000 RPM ou du visage entier -> BLOQUANT
 - Prix, délai, durée du rituel ou garantie modifié sur une page sans les autres -> BLOQUANT
 - `border-radius` non nul, couleur hors palette, police autre que Bodoni Moda / Jost -> BLOQUANT
-- Framework, dépendance npm, script tiers ou tracker ajouté -> BLOQUANT
+- Framework, dépendance npm ou script tiers ajouté -> BLOQUANT
+- Tracker chargé hors du bandeau de consentement, ou sans mise à jour de confidentialite.html -> BLOQUANT
 - Lien de paiement Stripe modifié ou supprimé -> CRITICAL, à signaler explicitement
 - Clé, token ou secret en clair -> CRITICAL
 - `node scripts/verifier.mjs` en erreur -> BLOQUANT
