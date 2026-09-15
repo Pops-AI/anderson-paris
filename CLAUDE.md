@@ -12,6 +12,14 @@ Suivi des ventes pour les publicités : code prêt, en attente de configuration.
 - Page /merci : achat envoyé à PostHog (et à Google Analytics s'il est un jour activé).
 - Achats vers Meta : application Stripe installée par la gérance. Ne jamais renvoyer l'événement Purchase
   à Meta depuis le site (double comptage).
+- `api/stripe-webhook.js` enregistre chaque commande dans Supabase (tables `orders` et `events`),
+  après l'envoi Klaviyo et sans jamais le compromettre. Déduplication garantie par les contraintes
+  uniques de la base, pas par le code.
+- **Le webhook n'envoie RIEN à PostHog.** Un serveur ne peut pas connaître le choix exprimé dans le
+  bandeau : il vit dans le navigateur. Confirmer l'achat depuis le serveur transmettrait les données
+  des clientes ayant refusé la mesure. Partage des rôles : PostHog = parcours sous consentement
+  (un achat peut y manquer), Supabase = source de vérité des ventes (base légale : exécution du contrat).
+  Le bilan quotidien lit les ventes dans Supabase, jamais dans PostHog.
 À fournir, jamais à inventer :
 - Pixel Meta actif (ID 1660164462081161, le même que celui relié à l'application Stripe).
 - `ID_POSTHOG` dans suivi.js (vaut « A_REMPLACER » : rien ne se charge). Clé publique de projet,

@@ -130,45 +130,23 @@ async function enregistrerDansSupabase(session, evenement, montant, devise, adre
 }
 
 /**
- * Confirme l'achat à PostHog depuis le SERVEUR.
+ * NOTE — pourquoi il n'y a PAS de confirmation d'achat vers PostHog ici.
  *
- * L'événement envoyé par le navigateur sur /merci est perdu si la cliente
- * ferme l'onglet, et compté deux fois si elle recharge la page. Celui-ci
- * fait foi. `$insert_id` porte la même valeur des deux côtés : PostHog
- * garde un seul achat, quel que soit le chemin emprunté.
+ * Un webhook serveur n'a aucun accès au choix exprimé dans le bandeau : il
+ * est stocké dans le navigateur de la cliente. Envoyer l'achat depuis ici
+ * transmettrait donc les données de TOUTES les commandes, y compris celles
+ * des clientes ayant refusé la mesure d'audience — en contradiction directe
+ * avec confidentialite.html, qui promet « déposé uniquement si vous
+ * l'acceptez ».
+ *
+ * Le partage des rôles est donc :
+ *   - PostHog  : mesure du parcours, côté navigateur, sous consentement.
+ *                Un achat peut y manquer ; c'est le prix du consentement.
+ *   - Supabase : source de vérité des ventes, côté serveur, exhaustive.
+ *                Base légale : exécution du contrat, pas le consentement.
+ *
+ * Le bilan quotidien lit les ventes dans Supabase, jamais dans PostHog.
  */
-async function confirmerAPostHog(session, montant, devise, adresse) {
-  const cle = process.env.POSTHOG_PROJECT_KEY;
-  if (!cle) return { ok: false, raison: 'non configuré' };
-
-  try {
-    const r = await fetch('https://eu.i.posthog.com/i/v0/e/', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        api_key: cle,
-        event: 'purchase',
-        // Pas d'e-mail en clair comme identifiant : l'id de session Stripe
-        // suffit à relier l'achat sans exposer de donnée personnelle.
-        distinct_id: session.id,
-        properties: {
-          store_id: 'anderson-paris',
-          product_id: 'lumina-regard',
-          order_id: session.id,
-          value: montant,
-          currency: devise,
-          country: adresse.country || null,
-          source: 'stripe-webhook',
-          $insert_id: `purchase:${session.id}`,
-        },
-        timestamp: new Date().toISOString(),
-      }),
-    });
-    return { ok: r.ok, status: r.status };
-  } catch (e) {
-    return { ok: false, raison: e.message };
-  }
-}
 
 // Vercel ignore la valeur de retour d'un `export default`.
 // Il faut exporter des méthodes HTTP nommées pour le style Web/fetch.
@@ -315,21 +293,14 @@ export async function POST(request) {
   console.log('Commande transmise à Klaviyo', session.id, email);
 
   // Klaviyo est passé : la commande est sauve côté relation client.
-  // Supabase et PostHog viennent APRÈS et ne peuvent plus la compromettre.
+  // Supabase vient APRÈS et ne peut plus la compromettre.
   // Un échec ici ne doit pas provoquer de renvoi par Stripe : cela rejouerait
   // l'événement Klaviyo et risquerait un second e-mail à la cliente.
-  const [supabase, posthog] = await Promise.all([
-    enregistrerDansSupabase(session, evenement, montant, devise, adresse).catch((e) => ({
-      ok: false,
-      raison: e.message,
-    })),
-    confirmerAPostHog(session, montant, devise, adresse).catch((e) => ({
-      ok: false,
-      raison: e.message,
-    })),
-  ]);
+  const supabase = await enregistrerDansSupabase(
+    session, evenement, montant, devise, adresse,
+  ).catch((e) => ({ ok: false, raison: e.message }));
 
-  console.log('Mesure', session.id, JSON.stringify({ supabase, posthog }));
+  console.log('Mesure', session.id, JSON.stringify({ supabase }));
 
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,
