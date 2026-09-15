@@ -1,11 +1,18 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
-  "regions": ["cdg1"],
-  "rewrites": [
+  "regions": [
+    "cdg1"
+  ],
+  "headers": [
     {
-      "source": "/googleba0f6557e855a7b5.html",
-      "destination": "/googleba0f6557e855a7b5.html"
+      "source": "/googleba0f6557e855a7b5",
+      "headers": [
+        {
+          "key": "content-type",
+          "value": "text/html; charset=utf-8"
+        }
+      ]
     }
   ]
 }
