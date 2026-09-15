@@ -57,6 +57,10 @@ header{position:sticky;top:0;z-index:50;background:rgba(245,240,235,.96);border-
 .vignettes button{padding:0;aspect-ratio:1/1;border:1px solid var(--ligne);background:var(--papier);overflow:hidden;cursor:pointer;opacity:.7;transition:opacity .2s ease}
 .vignettes button[aria-current="true"]{opacity:1;border-color:var(--rose)}
 .vignettes img{width:100%;height:100%;object-fit:cover;display:block}
+.video{display:flex;align-items:center;gap:10px;margin-top:14px;padding:11px 14px;border:1px solid var(--ligne);background:var(--papier);color:var(--anthracite);text-decoration:none;font-size:14px}
+.video:hover{border-color:var(--rose)}
+.video .lecture{width:26px;height:26px;background:var(--rose);color:var(--papier);display:flex;align-items:center;justify-content:center;font-size:10px;flex:0 0 auto}
+.video .duree{margin-left:auto;font-size:11px;letter-spacing:.08em;color:#8A8179}
 .hero h1{font-family:var(--serif);font-weight:400;font-size:clamp(40px,4.4vw,48px);line-height:1.04;color:var(--encre);margin:12px 0 14px;letter-spacing:-.01em}
 .promesse{font-size:17px;line-height:1.55;margin-bottom:22px;color:var(--anthracite)}
 .puces{list-style:none;padding:18px 0;border-top:1px solid var(--ligne);border-bottom:1px solid var(--ligne);display:flex;flex-direction:column;gap:9px}
@@ -111,8 +115,11 @@ h3{font-family:var(--serif);font-weight:400;font-size:20px;color:var(--encre);ma
 .jalon{border-top:1px solid #46433F;padding-top:16px}
 .jalon .quand{font-family:var(--serif);font-size:20px;line-height:1.2;color:var(--rose)}
 .jalon p{font-size:15px;line-height:1.55;margin-top:8px}
-.limites{margin-top:34px;padding:22px;border:1px solid #46433F;font-size:15px;line-height:1.6}
+.limites{display:flex;flex-wrap:wrap;gap:20px;margin-top:34px;padding:22px;border:1px solid #46433F;font-size:15px;line-height:1.6}
+.limites>*{flex:1 1 220px;min-width:0}
 .limites p+p{margin-top:10px}
+.avant-apres .libelle{font-size:11px;letter-spacing:.1em;color:#A69E93}
+.avant-apres img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;margin-top:10px;border:1px solid #46433F}
 
 /* diagnostic */
 .diagnostic .surtitre{margin-bottom:12px}
@@ -252,6 +259,7 @@ footer{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
           <img src="/images/schema-technologies.png" alt="Profondeur d'action des quatre technologies de Lumina Regard dans les couches de la peau" width="760" height="760" loading="lazy">
         </div>
         <div class="vignettes"></div>
+        <a class="video" href="#" hidden><span class="lecture" aria-hidden="true">▶</span><span>Voir le rituel de six minutes en vidéo</span><span class="duree">1:12</span></a>
       </div>
 
       <div class="achat">
@@ -265,15 +273,15 @@ footer{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
         </ul>
         <div class="ligne-prix">
           <p class="prix">129 €</p>
-          <p class="fractionne">ou en 3 fois sans frais avec Klarna*</p>
+          <p class="fractionne">ou 43 € × 3 sans frais*</p>
         </div>
         <p class="livraison">Livraison offerte en France, Belgique, Luxembourg et Suisse</p>
         <a class="cta" data-cta href="#offre">Commander — 129 €</a>
         <span class="sous-cta">Paiement sécurisé par Stripe · Expédié sous 48 h</span>
         <ul class="moyens" aria-label="Moyens de paiement acceptés">
-          <li>Visa</li><li>Mastercard</li><li>Apple Pay</li><li>Klarna</li><li>Bancontact</li>
+          <li>Visa</li><li>Mastercard</li><li>Apple Pay</li><li>Google Pay</li><li>3× sans frais</li>
         </ul>
-        <p class="note-klarna">* Selon votre pays et sous réserve d'acceptation par Klarna, non proposé au Luxembourg. Les options disponibles s'affichent au moment du paiement.</p>
+        <p class="note-klarna">* Paiement en 3 fois sans frais avec Klarna, selon votre pays et sous réserve d'acceptation par Klarna, non proposé au Luxembourg.</p>
         <ul class="rassurance">
           <li><strong>30 jours</strong>pour changer d'avis, même après usage</li>
           <li><strong>Garantie 2 ans</strong>sur tout dysfonctionnement</li>
@@ -368,8 +376,13 @@ footer{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
           </div>
         </div>
         <div class="limites">
-          <p>Lumina Regard ne remplace pas une injection et n'efface pas une ride profonde.</p>
-          <p>Vous avez 30 jours pour juger par vous-même, et être remboursée si le résultat ne vous convient pas.</p>
+          <figure class="avant-apres" hidden>
+            <figcaption class="libelle">Avant / après</figcaption>
+          </figure>
+          <div>
+            <p>Lumina Regard ne remplace pas une injection et n'efface pas une ride profonde.</p>
+            <p>Vous avez 30 jours pour juger par vous-même, et être remboursée si le résultat ne vous convient pas.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -442,7 +455,7 @@ footer{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
         </div>
         <div class="encadre-achat">
           <p class="prix">129 €</p>
-          <p class="fractionne">ou en 3 fois sans frais avec Klarna* · livraison offerte</p>
+          <p class="fractionne">ou 43 € × 3 sans frais* · livraison offerte</p>
           <a class="cta" data-cta href="#offre">Commander — 129 €</a>
           <span class="sous-cta">Paiement sécurisé par Stripe · Expédition sous 48 h ouvrées</span>
           <div class="garanties">
@@ -534,7 +547,7 @@ footer{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
 
 <div class="barre-achat" aria-hidden="true">
   <div class="wrap">
-    <p class="ba-prix">129 €<em>En 3 fois sans frais* · livraison offerte</em></p>
+    <p class="ba-prix">129 €<em>43 € × 3 · livraison offerte</em></p>
     <a class="cta" data-cta href="#offre" tabindex="-1">Commander</a>
   </div>
 </div>
@@ -546,6 +559,21 @@ const LIEN_PAIEMENT = "https://buy.stripe.com/eVq6oH3x56J77n1bNH7ok00";
 document.querySelectorAll("[data-cta]").forEach(function(el){
   if(LIEN_PAIEMENT.indexOf("A_REMPLACER") === -1){ el.href = LIEN_PAIEMENT; }
 });
+
+// Vidéo du rituel et photo avant / après : déposer le fichier dans /images puis indiquer son adresse ici pour afficher le bloc.
+const VIDEO_RITUEL = "";
+const PHOTO_AVANT_APRES = "";
+(function(){
+  var video = document.querySelector(".video");
+  if(video && VIDEO_RITUEL){ video.href = VIDEO_RITUEL; video.hidden = false; }
+  var avantApres = document.querySelector(".avant-apres");
+  if(avantApres && PHOTO_AVANT_APRES){
+    var photo = document.createElement("img");
+    photo.src = PHOTO_AVANT_APRES; photo.alt = "Contour des yeux avant et après douze semaines de rituel"; photo.width = 1600; photo.height = 900; photo.loading = "lazy";
+    avantApres.appendChild(photo);
+    avantApres.hidden = false;
+  }
+})();
 
 // Achat : signale le début du paiement à Meta et Google (si consentement).
 document.querySelectorAll("[data-cta]").forEach(function(el){
