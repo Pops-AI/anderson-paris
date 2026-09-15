@@ -2,7 +2,7 @@
 // Rien ne se charge tant qu'un identifiant vaut A_REMPLACER, ni sans le consentement donné dans le bandeau.
 var Suivi = (function(){
   var ID_GOOGLE_ANALYTICS = "A_REMPLACER";
-  var ID_POSTHOG = "A_REMPLACER";
+  var ID_POSTHOG = "phc_tKVSrAT4x6bARoM6F2t93CdSpzHonhNtuoETMmSe27qM";
   var HOTE_POSTHOG = "https://eu.i.posthog.com";
   var ID_PIXEL_META = "1660164462081161";
   var PRIX = 129;
