@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lumina Regard — Anderson Paris</title>
 <meta name="description" content="Lumina Regard : LED 660 nm, micro-courant, chaleur et vibration. Un rituel de six minutes pour le contour des yeux. Anderson Paris.">
+<link rel="icon" type="image/png" href="/images/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
@@ -31,6 +32,7 @@ header{position:sticky;top:0;z-index:50;background:rgba(245,240,235,.92);backdro
 .bar{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;max-width:1120px;margin:0 auto}
 .marque{font-family:var(--serif);font-size:19px;letter-spacing:.22em;text-transform:uppercase;color:var(--encre);text-decoration:none}
 .marque span{display:block;font-family:var(--sans);font-size:9px;letter-spacing:.42em;color:var(--rose);margin-top:3px}
+.marque .logo{display:block;height:26px;width:auto}
 .lien-achat{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--anthracite);text-decoration:none;border-bottom:1px solid var(--rose);padding-bottom:3px}
 .lien-achat:hover{color:var(--rose)}
 
@@ -67,6 +69,9 @@ p+p{margin-top:18px}
 .tech .mesure{font-size:12px;letter-spacing:.16em;color:var(--rose);margin-bottom:10px}
 
 /* rituel */
+.schema{margin:64px auto 0;max-width:720px}
+.schema img{width:100%;height:auto;display:block;border:1px solid var(--ligne)}
+.schema figcaption{margin-top:14px;font-size:13px;color:#8A8179;text-align:center;letter-spacing:.03em}
 .rituel{display:grid;grid-template-columns:repeat(3,1fr);gap:44px;margin-top:48px;counter-reset:acte}
 .acte{border-top:1px solid var(--ligne);padding-top:22px}
 .acte::before{counter-increment:acte;content:counter(acte,decimal-leading-zero);font-family:var(--serif);font-size:15px;color:var(--rose);display:block;margin-bottom:12px}
@@ -119,7 +124,7 @@ footer a:hover{color:var(--rose)}
 
 <header>
   <div class="bar">
-    <a class="marque" href="#">Anderson Paris<span>Maison de beauty-tech</span></a>
+    <a class="marque" href="#"><img src="/images/logo-anderson.png" alt="Anderson Paris" class="logo"><span>Maison de beauty-tech</span></a>
     <a class="lien-achat" data-cta href="#offre">129 € — Commander</a>
   </div>
 </header>
@@ -134,8 +139,7 @@ footer a:hover{color:var(--rose)}
         <a class="cta" data-cta href="#offre">Commencer le rituel</a>
         <span class="sous-cta">Paiement sécurisé · 30 jours pour changer d'avis</span>
       </div>
-      <!-- REMPLACER par : <img src="/images/lumina-hero.jpg" alt="Lumina Regard"> -->
-      <div class="visuel">PHOTO PRODUIT<br>format portrait 4:5</div>
+      <div class="visuel"><img src="/images/hero-regard.jpg" alt="Gros plan sur le contour de l'oeil" width="680" height="850"></div>
     </div>
   </div>
 
@@ -177,6 +181,10 @@ footer a:hover{color:var(--rose)}
           <p>Un drainage mécanique orienté du coin interne vers la tempe, dans le sens du réseau lymphatique. C'est le geste qui agit sur les poches du matin.</p>
         </div>
       </div>
+      <figure class="schema">
+        <img src="/images/schema-technologies.png" alt="Profondeur d'action des quatre technologies de Lumina Regard dans les couches de la peau" width="760" height="760" loading="lazy">
+        <figcaption>Profondeur d'action de chaque fonction, de la surface cutanée au derme.</figcaption>
+      </figure>
     </div>
   </section>
 
