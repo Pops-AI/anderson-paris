@@ -5,13 +5,13 @@
 ## Chantier en cours
 
 Livraison étendue au Luxembourg : terminé (hero, FAQ, CGV articles 3 et 5).
-Délai provisoire identique pour les quatre pays : 4 à 7 jours ouvrés (Suisse : hors dédouanement).
-Délais réels par pays à obtenir : les reporter ensuite dans le tableau CGV article 5 ET la FAQ de index.html.
+Délai retenu pour les quatre pays : 4 à 7 jours ouvrés (Suisse : hors dédouanement). Décision définitive.
 
-À compléter avant la première vente (valeurs à demander, jamais à inventer) :
-- Pied de page de index.html : « SIREN [à compléter] — [adresse à compléter] ». Les vraies valeurs sont dans mentions-legales.html.
-- mentions-legales.html : téléphone, adresse Vercel, médiateur de la consommation, IDU DEEE et IDU batteries.
-- cgv.html article 5 : entrepôt d'expédition réel.
+Bandeau de consentement + pixel Meta + Google Analytics : en cours.
+Identifiants à fournir, jamais à inventer : `ID_PIXEL_META` et `ID_GOOGLE_ANALYTICS` dans le script de index.html.
+Tant qu'ils valent « A_REMPLACER », aucun traceur ne se charge.
+
+Mis de côté volontairement : téléphone, adresse Vercel, médiateur, IDU (mentions-legales.html) et entrepôt d'expédition (CGV article 5, ne pas le mentionner).
 
 ## Règles de contenu — non négociables
 
