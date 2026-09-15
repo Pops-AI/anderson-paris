@@ -122,7 +122,9 @@ export default async function handler(request) {
         metric: {
           data: {
             type: 'metric',
-            attributes: { name: 'Placed Order' },
+            // Doit correspondre EXACTEMENT au déclencheur du flow Klaviyo.
+            // Si tu changes ce texte, change aussi le flow, sinon plus rien ne part.
+            attributes: { name: 'Commande Passée' },
           },
         },
         profile: {
