@@ -15,9 +15,10 @@ const REFERENCE = {
   pays: ["France", "Belgique", "Luxembourg", "Suisse"],
 };
 
-const PAGES = ["index.html", "cgv.html", "retractation.html", "mentions-legales.html", "confidentialite.html"];
+const PAGES = ["index.html", "cgv.html", "retractation.html", "mentions-legales.html", "confidentialite.html", "merci.html"];
 const PAGES_LEGALES = PAGES.filter((p) => p !== "index.html");
 const FEUILLES = ["style.css"];
+const SCRIPTS = ["suivi.js"];
 
 const INTERDITS = [
   [/Lumina\s+Pro/i, "« Lumina Pro » est l'ancien produit abandonné"],
@@ -47,7 +48,7 @@ function signaler(liste, fichier, texte, position, message) {
 }
 
 const contenus = Object.fromEntries(
-  [...PAGES, ...FEUILLES].filter((f) => existsSync(join(RACINE, f))).map((f) => [f, lire(f)])
+  [...PAGES, ...FEUILLES, ...SCRIPTS].filter((f) => existsSync(join(RACINE, f))).map((f) => [f, lire(f)])
 );
 
 for (const page of PAGES) {
@@ -109,6 +110,12 @@ if (contenus["index.html"]) {
 
 if (contenus["cgv.html"] && !contenus["cgv.html"].includes(`${REFERENCE.prix} €`)) {
   signaler(erreurs, "cgv.html", contenus["cgv.html"], null, `prix de référence ${REFERENCE.prix} € absent des CGV`);
+}
+
+if (contenus["suivi.js"]) {
+  const texte = contenus["suivi.js"];
+  const prix = texte.match(/var PRIX = (\d+);/);
+  if (!prix || Number(prix[1]) !== REFERENCE.prix) signaler(erreurs, "suivi.js", texte, prix?.index ?? null, `prix des achats envoyés à Meta et Google différent de ${REFERENCE.prix} €`);
 }
 
 for (const page of ["index.html", "cgv.html", "mentions-legales.html"].filter((p) => contenus[p])) {

@@ -364,6 +364,7 @@ footer a:hover{color:var(--rose)}
   <a class="cta" data-cta href="#offre" tabindex="-1">Commander</a>
 </div>
 
+<script src="/suivi.js"></script>
 <script>
 // Remplacer par le lien de paiement Stripe une fois créé.
 const LIEN_PAIEMENT = "https://buy.stripe.com/eVq6oH3x56J77n1bNH7ok00";
@@ -371,45 +372,26 @@ document.querySelectorAll("[data-cta]").forEach(function(el){
   if(LIEN_PAIEMENT.indexOf("A_REMPLACER") === -1){ el.href = LIEN_PAIEMENT; }
 });
 
-// Traceurs : rien ne se charge tant que l'identifiant vaut A_REMPLACER ou sans consentement.
-// Ajouter ?bandeau à l'adresse pour afficher le bandeau avant d'avoir les identifiants.
-const ID_GOOGLE_ANALYTICS = "A_REMPLACER";
-const ID_PIXEL_META = "A_REMPLACER";
+// Achat : signale le début du paiement et transmet à Stripe la référence publicitaire (voir suivi.js).
+document.querySelectorAll("[data-cta]").forEach(function(el){
+  el.addEventListener("click", function(){
+    if(el.href.indexOf("https://buy.stripe.com/") !== 0) return;
+    Suivi.evenement("InitiateCheckout", "begin_checkout");
+    var url = new URL(LIEN_PAIEMENT), ref = Suivi.referenceCommande();
+    if(ref) url.searchParams.set("client_reference_id", ref);
+    el.href = url.toString();
+  });
+});
+
+// Bandeau de consentement. Ajouter ?bandeau à l'adresse pour l'afficher avant d'avoir les identifiants.
 (function(){
-  var ga = ID_GOOGLE_ANALYTICS.indexOf("A_REMPLACER") === -1;
-  var meta = ID_PIXEL_META.indexOf("A_REMPLACER") === -1;
-  if(!ga && !meta && !/[?&]bandeau\b/.test(location.search)) return;
-  var CLE = "ap-consentement", SIX_MOIS = 182 * 24 * 3600 * 1000;
+  if(!Suivi.configure && !/[?&]bandeau\b/.test(location.search)) return;
   var bandeau = document.querySelector(".consentement");
   var choix = bandeau.querySelector(".choix");
   var personnaliser = bandeau.querySelector('[data-choix="personnaliser"]');
   var lienGerer = document.querySelector(".lien-cookies");
   var cases = { audience: choix.querySelector('[name="audience"]'), publicite: choix.querySelector('[name="publicite"]') };
 
-  function lire(){
-    try{ var c = JSON.parse(localStorage.getItem(CLE)); if(c && Date.now() - c.date < SIX_MOIS) return c; }catch(e){}
-    return null;
-  }
-  function charger(src){
-    var s = document.createElement("script"); s.async = true; s.src = src; document.head.appendChild(s);
-  }
-  function activer(c){
-    if(c.audience && ga){
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = function(){ dataLayer.push(arguments); };
-      gtag("js", new Date());
-      gtag("config", ID_GOOGLE_ANALYTICS, { cookie_expires: 395 * 24 * 3600 });
-      charger("https://www.googletagmanager.com/gtag/js?id=" + ID_GOOGLE_ANALYTICS);
-    }
-    if(c.publicite && meta){
-      var f = window.fbq = function(){ f.callMethod ? f.callMethod.apply(f, arguments) : f.queue.push(arguments); };
-      if(!window._fbq) window._fbq = f;
-      f.push = f; f.loaded = true; f.version = "2.0"; f.queue = [];
-      charger("https://connect.facebook.net/fr_FR/fbevents.js");
-      fbq("init", ID_PIXEL_META);
-      fbq("track", "PageView");
-    }
-  }
   function effacerCookies(){
     var domaine = location.hostname.replace(/^www\./, "");
     document.cookie.split(";").forEach(function(c){
@@ -420,11 +402,10 @@ const ID_PIXEL_META = "A_REMPLACER";
     });
   }
   function enregistrer(c){
-    var avant = lire();
-    c.date = Date.now();
-    try{ localStorage.setItem(CLE, JSON.stringify(c)); }catch(e){}
+    var avant = Suivi.consentement();
+    Suivi.enregistrer(c);
     bandeau.hidden = true;
-    if(!avant){ activer(c); return; }
+    if(!avant){ Suivi.activer(c); return; }
     if(avant.audience === c.audience && avant.publicite === c.publicite) return;
     if((avant.audience && !c.audience) || (avant.publicite && !c.publicite)) effacerCookies();
     location.reload();
@@ -445,15 +426,15 @@ const ID_PIXEL_META = "A_REMPLACER";
   });
   lienGerer.hidden = false;
   lienGerer.addEventListener("click", function(){
-    var c = lire() || { audience: false, publicite: false };
+    var c = Suivi.consentement() || { audience: false, publicite: false };
     cases.audience.checked = c.audience;
     cases.publicite.checked = c.publicite;
     ouvrirChoix();
     bandeau.hidden = false;
   });
 
-  var existant = lire();
-  if(existant) activer(existant); else bandeau.hidden = false;
+  var existant = Suivi.consentement();
+  if(existant) Suivi.activer(existant); else bandeau.hidden = false;
 })();
 
 // Barre d'achat mobile : visible une fois le CTA du hero dépassé, masquée sur l'offre.

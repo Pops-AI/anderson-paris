@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Merci pour votre commande — Anderson Paris</title>
+<link rel="icon" type="image/png" href="/images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header><div class="bar">
+<a class="marque" href="/">Anderson Paris<span>Maison de beauty-tech</span></a>
+<a class="retour" href="/">Retour à la boutique</a>
+</div></header>
+<main><div class="wrap">
+<h1>Merci pour votre commande.</h1>
+<p class="maj">Votre paiement est confirmé. Un courriel récapitulatif vous est adressé.</p>
+
+<h2 style="border-top:none;padding-top:0">La suite</h2>
+<table>
+<tr><th>Expédition</th><td>Sous 48 heures ouvrées.</td></tr>
+<tr><th>Livraison</th><td>4 à 7 jours ouvrés en France métropolitaine, en Belgique, au Luxembourg et en Suisse (hors délais de dédouanement).</td></tr>
+<tr><th>Suivi</th><td>Un numéro de suivi vous est transmis dès la remise du colis au transporteur.</td></tr>
+<tr><th>Changer d'avis</th><td>30 jours à compter de la réception pour retourner l'appareil, y compris après utilisation. Détails sur la page <a href="/retractation">Rétractation et retours</a>.</td></tr>
+</table>
+<p>Une question sur votre commande : <a href="mailto:contact@andersonparis.fr">contact@andersonparis.fr</a></p>
+</div></main>
+<footer><div class="wrap">
+<div class="fnav">
+<a href="/mentions-legales">Mentions légales</a>
+<a href="/cgv">Conditions générales de vente</a>
+<a href="/confidentialite">Confidentialité</a>
+<a href="/retractation">Rétractation et retours</a>
+<a href="mailto:contact@andersonparis.fr">contact@andersonparis.fr</a>
+</div>
+<p>Anderson Paris — nom commercial de Mohamed-Rayane BAROUDI EI — SIRET 993 868 421 00013 — © 2026.</p>
+</div></footer>
+<script src="/suivi.js"></script>
+<script>
+// Stripe renvoie ici après paiement : https://andersonparis.fr/merci?session_id={CHECKOUT_SESSION_ID}
+(function(){
+  var session = new URLSearchParams(location.search).get("session_id") || "";
+  if(session) history.replaceState(null, "", "/merci");
+  var c = Suivi.consentement();
+  if(!c) return;
+  Suivi.activer(c);
+  if(!/^cs_(test|live)_[A-Za-z0-9]+$/.test(session)) return;
+  var dejaComptees = [];
+  try{ dejaComptees = JSON.parse(localStorage.getItem("ap-achats")) || []; }catch(e){}
+  if(dejaComptees.indexOf(session) !== -1) return;
+  dejaComptees.push(session);
+  try{ localStorage.setItem("ap-achats", JSON.stringify(dejaComptees.slice(-20))); }catch(e){}
+  Suivi.evenement("Purchase", "purchase", session);
+})();
+</script>
+</body></html>
