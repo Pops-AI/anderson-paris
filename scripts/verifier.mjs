@@ -16,7 +16,7 @@ const REFERENCE = {
   delai: "4 à 10 jours ouvrés",
 };
 
-const PAGES = ["index.html", "cgv.html", "retractation.html", "mentions-legales.html", "confidentialite.html", "merci.html"];
+const PAGES = ["index.html", "cgv.html", "retractation.html", "mentions-legales.html", "confidentialite.html", "merci.html", "guide-rituel.html", "guide-serums.html", "calendrier-rituel.html"];
 const PAGES_LEGALES = PAGES.filter((p) => p !== "index.html");
 const FEUILLES = ["style.css"];
 const SCRIPTS = ["suivi.js"];
