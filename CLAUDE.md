@@ -9,13 +9,15 @@ Délai retenu pour les quatre pays : 4 à 7 jours ouvrés (Suisse : hors dédoua
 
 Suivi des ventes pour les publicités : code prêt, en attente de configuration.
 - Bandeau de consentement (index.html) + Google Analytics + pixel Meta (suivi.js).
-- Page /merci : événement Purchase côté navigateur.
-- api/stripe-webhook.js : achat envoyé à l'API Conversions de Meta, coordonnées hachées, uniquement si la publicité est acceptée.
+- Page /merci : achat envoyé à Google Analytics uniquement.
+- Achats vers Meta : application Stripe installée par la gérance. Ne jamais renvoyer l'événement Purchase
+  à Meta depuis le site (double comptage).
 À fournir, jamais à inventer :
 - `ID_GOOGLE_ANALYTICS` et `ID_PIXEL_META` dans suivi.js (tant qu'ils valent « A_REMPLACER », rien ne se charge).
-- Variables Vercel : STRIPE_WEBHOOK_SECRET, META_PIXEL_ID, META_CAPI_TOKEN. Jamais dans le code.
+- Nom de l'application Stripe, données qu'elle transmet à Meta et respect du refus des cookies :
+  à reporter dans confidentialite.html (ligne « Mesure des achats publicitaires »).
 - Stripe (après mise en ligne de /merci) : redirection du lien de paiement vers
-  https://andersonparis.fr/merci?session_id={CHECKOUT_SESSION_ID}, webhook checkout.session.completed vers /api/stripe-webhook.
+  https://andersonparis.fr/merci?session_id={CHECKOUT_SESSION_ID}.
 
 Mis de côté volontairement : téléphone, adresse Vercel, médiateur, IDU (mentions-legales.html) et entrepôt d'expédition (CGV article 5, ne pas le mentionner).
 
@@ -57,7 +59,7 @@ la page à 400 px et à 1280 px de large.
 - `border-radius` non nul, couleur hors palette, police autre que Bodoni Moda / Jost -> BLOQUANT
 - Framework, dépendance npm ou script tiers ajouté -> BLOQUANT
 - Tracker chargé hors du bandeau de consentement, ou sans mise à jour de confidentialite.html -> BLOQUANT
-- Donnée envoyée à Meta ou Google sans consentement (y compris depuis api/stripe-webhook.js) -> BLOQUANT
+- Donnée envoyée à Meta ou Google depuis le site sans consentement -> BLOQUANT
 - Lien de paiement Stripe modifié ou supprimé -> CRITICAL, à signaler explicitement
 - Clé, token ou secret en clair -> CRITICAL
 - `node scripts/verifier.mjs` en erreur -> BLOQUANT

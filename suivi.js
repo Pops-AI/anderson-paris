@@ -39,9 +39,9 @@ var Suivi = (function(){
       fbq("track", "PageView");
     }
   }
-  // idCommande sert à Meta et Google pour ne compter qu'une fois un achat vu par le navigateur et par le serveur.
+  // nomMeta vide : rien n'est envoyé à Meta. idCommande permet à Google de ne compter un achat qu'une fois.
   function evenement(nomMeta, nomGoogle, idCommande){
-    if(actif.publicite){
+    if(actif.publicite && nomMeta){
       fbq("track", nomMeta, { value: PRIX, currency: "EUR", content_ids: ["lumina-regard"], content_type: "product" }, idCommande ? { eventID: idCommande } : {});
     }
     if(actif.audience){
@@ -50,27 +50,11 @@ var Suivi = (function(){
       gtag("event", nomGoogle, donnees);
     }
   }
-  function cookie(nom){
-    var m = document.cookie.match(new RegExp("(?:^|; )" + nom + "=([^;]*)"));
-    return m ? decodeURIComponent(m[1]) : "";
-  }
-  // Référence transmise à Stripe (client_reference_id), relue par api/stripe-webhook.js.
-  // Elle n'existe que si la publicité est acceptée : sans elle, le serveur n'envoie rien à Meta.
-  // Format : m1_<cookie _fbp>_<cookie _fbc>, points remplacés par des tirets (Stripe refuse les points).
-  function referenceCommande(){
-    if(!actif.publicite) return "";
-    var fbp = cookie("_fbp"), fbc = cookie("_fbc");
-    var ref = "m1_" + (fbp ? fbp.replace(/\./g, "-") : "0") + "_" + (fbc ? fbc.replace(/^fb\.(\d)\.(\d+)\./, "fb-$1-$2-") : "0");
-    if(ref.length > 200 || !/^[A-Za-z0-9_-]+$/.test(ref)) ref = "m1_" + (fbp ? fbp.replace(/\./g, "-") : "0") + "_0";
-    return /^[A-Za-z0-9_-]+$/.test(ref) ? ref : "m1_0_0";
-  }
-
   return {
     configure: ga || meta,
     consentement: consentement,
     enregistrer: enregistrer,
     activer: activer,
-    evenement: evenement,
-    referenceCommande: referenceCommande
+    evenement: evenement
   };
 })();

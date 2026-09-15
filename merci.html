@@ -54,7 +54,8 @@
   if(dejaComptees.indexOf(session) !== -1) return;
   dejaComptees.push(session);
   try{ localStorage.setItem("ap-achats", JSON.stringify(dejaComptees.slice(-20))); }catch(e){}
-  Suivi.evenement("Purchase", "purchase", session);
+  // Meta reçoit l'achat par l'application Stripe : le renvoyer ici le compterait deux fois.
+  Suivi.evenement(null, "purchase", session);
 })();
 </script>
 </body></html>
