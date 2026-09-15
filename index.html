@@ -111,6 +111,17 @@ footer a:hover{color:var(--rose)}
 .fnav{display:flex;flex-wrap:wrap;gap:26px;margin:26px 0 34px}
 .legal{font-size:12.5px;line-height:1.8;color:#7C756C;max-width:72ch}
 
+/* barre d'achat mobile */
+.barre-achat{display:none}
+@media (max-width:860px){
+  .barre-achat{display:flex;align-items:center;justify-content:space-between;gap:16px;position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(245,240,235,.96);backdrop-filter:blur(8px);border-top:1px solid var(--ligne);padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px));transform:translateY(100%);transition:transform .3s ease}
+  .barre-achat.visible{transform:translateY(0)}
+  .barre-achat .ba-prix{font-family:var(--serif);font-size:22px;line-height:1.1;color:var(--encre)}
+  .barre-achat .ba-prix em{display:block;font-family:var(--sans);font-style:normal;font-size:11px;letter-spacing:.08em;color:#7E766C;margin-top:3px}
+  .barre-achat .cta{margin-top:0;padding:15px 26px;white-space:nowrap}
+  footer{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
+}
+
 @media (max-width:860px){
   .hero{grid-template-columns:1fr;gap:44px;padding:64px 0 76px}
   .hero .visuel{order:-1;aspect-ratio:1/1}
@@ -314,12 +325,38 @@ footer a:hover{color:var(--rose)}
   </div>
 </footer>
 
+<div class="barre-achat" aria-hidden="true">
+  <p class="ba-prix">129 €<em>Livraison offerte · 30 jours</em></p>
+  <a class="cta" data-cta href="#offre" tabindex="-1">Commander</a>
+</div>
+
 <script>
 // Remplacer par le lien de paiement Stripe une fois créé.
 const LIEN_PAIEMENT = "https://buy.stripe.com/eVq6oH3x56J77n1bNH7ok00";
 document.querySelectorAll("[data-cta]").forEach(function(el){
   if(LIEN_PAIEMENT.indexOf("A_REMPLACER") === -1){ el.href = LIEN_PAIEMENT; }
 });
+
+// Barre d'achat mobile : visible une fois le CTA du hero dépassé, masquée sur l'offre.
+(function(){
+  var barre = document.querySelector(".barre-achat");
+  var heroCta = document.querySelector(".hero .cta");
+  var offre = document.getElementById("offre");
+  if(!barre || !heroCta || !offre || !("IntersectionObserver" in window)) return;
+  var heroPasse = false, offreVisible = false;
+  function maj(){
+    var afficher = heroPasse && !offreVisible;
+    barre.classList.toggle("visible", afficher);
+    barre.setAttribute("aria-hidden", afficher ? "false" : "true");
+    barre.querySelector("a").tabIndex = afficher ? 0 : -1;
+  }
+  new IntersectionObserver(function(e){
+    heroPasse = !e[0].isIntersecting && e[0].boundingClientRect.top < 0; maj();
+  }).observe(heroCta);
+  new IntersectionObserver(function(e){
+    offreVisible = e[0].isIntersecting; maj();
+  }).observe(offre);
+})();
 </script>
 </body>
 </html>
