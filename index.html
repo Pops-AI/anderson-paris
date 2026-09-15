@@ -534,9 +534,9 @@ footer{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
 </footer>
 
 <div class="consentement" role="dialog" aria-label="Choix des cookies" hidden>
-  <p>Nous mesurons l'efficacité de nos publicités avec le pixel Meta. Rien n'est déposé sans votre choix. <a href="/confidentialite">En savoir plus</a></p>
+  <p>Nous mesurons l'audience du site et l'efficacité de nos publicités. Rien n'est déposé sans votre choix. <a href="/confidentialite">En savoir plus</a></p>
   <div class="choix" hidden>
-    <label hidden><input type="checkbox" name="audience"> Mesure d'audience — Google Analytics</label>
+    <label><input type="checkbox" name="audience"> Mesure d'audience — PostHog</label>
     <label><input type="checkbox" name="publicite"> Publicité — pixel Meta</label>
   </div>
   <div class="boutons">
@@ -582,6 +582,10 @@ document.querySelectorAll("[data-cta]").forEach(function(el){
     if(el.href.indexOf("https://buy.stripe.com/") === 0) Suivi.evenement("InitiateCheckout", "begin_checkout");
   });
 });
+
+// Vue produit : la page d'accueil EST la fiche produit. Envoyé à PostHog seul —
+// Meta et Google reçoivent déjà leur PageView au chargement du traceur.
+Suivi.vueProduit();
 
 // Galerie : une grande photo en fondu, une vignette par photo, balayage au doigt sur mobile.
 (function(){
@@ -703,7 +707,7 @@ document.querySelectorAll("[data-cta]").forEach(function(el){
     var domaine = location.hostname.replace(/^www\./, "");
     document.cookie.split(";").forEach(function(c){
       var nom = c.split("=")[0].trim();
-      if(!/^(_ga|_gid|_fbp|_fbc)/.test(nom)) return;
+      if(!/^(_ga|_gid|_fbp|_fbc|ph_)/.test(nom)) return;
       document.cookie = nom + "=; max-age=0; path=/";
       document.cookie = nom + "=; max-age=0; path=/; domain=." + domaine;
     });
@@ -714,6 +718,7 @@ document.querySelectorAll("[data-cta]").forEach(function(el){
     bandeau.hidden = true;
     if(!avant){ Suivi.activer(c); return; }
     if(avant.audience === c.audience && avant.publicite === c.publicite) return;
+    if(avant.audience && !c.audience) Suivi.couper();
     if((avant.audience && !c.audience) || (avant.publicite && !c.publicite)) effacerCookies();
     location.reload();
   }
