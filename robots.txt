@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /googleba0f6557e855a7b5.html
 
 Sitemap: https://www.andersonparis.fr/sitemap.xml
