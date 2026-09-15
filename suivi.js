@@ -31,7 +31,7 @@ var Suivi = (function(){
     if(p.__loaded) return;
     p._i = p._i || [];
     "init capture identify register reset opt_in_capturing opt_out_capturing".split(" ").forEach(function(m){
-      p[m] = p[m] || function(){ (p._i.push ? p : p._i).push([m].concat([].slice.call(arguments))); };
+      p[m] = p[m] || function(){ p._i.push([m].concat([].slice.call(arguments))); };
     });
     charger(HOTE_POSTHOG + "/static/array.js");
     p.init(ID_POSTHOG, {
