@@ -4,10 +4,9 @@
 
 ## Chantier en cours
 
-Livraison étendue au Luxembourg (confirmé).
-- Fait : hero de index.html, article 3 des CGV.
-- Reste : délai Luxembourg dans le tableau de l'article 5 des CGV (délai à obtenir, ne pas l'inventer).
-- Reste : FAQ « Quels sont les délais de livraison ? » de index.html alignée sur le tableau CGV, pays par pays.
+Livraison étendue au Luxembourg : terminé (hero, FAQ, CGV articles 3 et 5).
+Délai provisoire identique pour les quatre pays : 4 à 7 jours ouvrés (Suisse : hors dédouanement).
+Délais réels par pays à obtenir : les reporter ensuite dans le tableau CGV article 5 ET la FAQ de index.html.
 
 À compléter avant la première vente (valeurs à demander, jamais à inventer) :
 - Pied de page de index.html : « SIREN [à compléter] — [adresse à compléter] ». Les vraies valeurs sont dans mentions-legales.html.
