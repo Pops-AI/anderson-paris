@@ -32,9 +32,14 @@ Ne pas confondre avec « Lumina Pro », ancien produit abandonné
 ## Environnements
 | Env | Adresse | Déclencheur |
 |---|---|---|
-| Production | andersonparis.fr | push sur `main` |
+| Production | www.andersonparis.fr | push sur `main` |
 | Preview | URL Vercel de la branche | push sur toute autre branche |
 | Local | http://localhost:8000 | `node scripts/serveur.mjs` |
+
+Le domaine canonique est **`www.andersonparis.fr`** : l'apex `andersonparis.fr` renvoie
+un `308` permanent vers `www`, et le certificat TLS ne couvre que `www`. Toute URL
+absolue publiée (canonical, sitemap, robots.txt, Open Graph) porte donc le `www.` ;
+l'écrire sans préfixe pointerait vers une redirection au lieu du contenu.
 
 ## Structure
 ```
