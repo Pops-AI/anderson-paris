@@ -110,6 +110,23 @@ footer a{color:#C8C0B6;text-decoration:none;border-bottom:1px solid #46433F}
 footer a:hover{color:var(--rose)}
 .fnav{display:flex;flex-wrap:wrap;gap:26px;margin:26px 0 34px}
 .legal{font-size:12.5px;line-height:1.8;color:#7C756C;max-width:72ch}
+.lien-cookies{background:none;border:none;border-bottom:1px solid #46433F;color:#C8C0B6;font:inherit;cursor:pointer;padding:0}
+.lien-cookies:hover{color:var(--rose)}
+
+/* bandeau de consentement */
+[hidden]{display:none!important}
+.consentement{position:fixed;left:0;right:0;bottom:0;z-index:70;background:var(--papier);border-top:1px solid var(--ligne);padding:24px 0 calc(24px + env(safe-area-inset-bottom,0px))}
+.consentement .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px 40px}
+.consentement p{font-size:14px;line-height:1.7;max-width:62ch}
+.consentement p a{color:var(--encre);text-decoration:none;border-bottom:1px solid var(--rose)}
+.consentement .choix{display:flex;flex-direction:column;gap:8px;width:100%;font-size:14px}
+.consentement label{display:flex;align-items:center;gap:10px;cursor:pointer}
+.consentement input{accent-color:var(--encre)}
+.consentement .boutons{display:flex;flex-wrap:wrap;gap:12px}
+.consentement button{font-family:var(--sans);font-weight:400;font-size:12px;letter-spacing:.16em;text-transform:uppercase;padding:14px 26px;cursor:pointer;background:var(--encre);color:var(--albatre);border:1px solid var(--encre)}
+.consentement button.discret{background:none;color:var(--encre)}
+.consentement button:hover{background:var(--rose);border-color:var(--rose);color:var(--albatre)}
+.consentement button:focus-visible,.lien-cookies:focus-visible{outline:2px solid var(--rose);outline-offset:4px}
 
 /* barre d'achat mobile */
 .barre-achat{display:none}
@@ -128,6 +145,7 @@ footer a:hover{color:var(--rose)}
   .tech,.rituel,.franchise .duo,.garanties{grid-template-columns:1fr;gap:34px}
   section{padding:64px 0}
   .fait{grid-template-columns:1fr;gap:14px}
+  .consentement .boutons button{flex:1 1 auto}
 }
 </style>
 </head>
@@ -319,23 +337,101 @@ footer a:hover{color:var(--rose)}
       <a href="/confidentialite">Confidentialité</a>
       <a href="/retractation">Rétractation et retours</a>
       <a href="mailto:contact@andersonparis.fr">contact@andersonparis.fr</a>
+      <button type="button" class="lien-cookies" hidden>Gérer les cookies</button>
     </div>
     <p class="legal">Lumina Regard est un appareil de beauté à usage domestique. Il ne constitue pas un dispositif médical et ne remplace pas une consultation dermatologique. Les délais indiqués correspondent à une pratique quotidienne régulière et varient selon les personnes.<br>
-    Anderson Paris — SIREN [à compléter] — [adresse à compléter] — © 2026. Tous droits réservés.</p>
+    Anderson Paris — SIREN 993 868 421 — 8 place Roger Salengro, 31000 Toulouse — © 2026. Tous droits réservés.</p>
   </div>
 </footer>
+
+<div class="consentement" role="dialog" aria-label="Choix des cookies" hidden>
+  <div class="wrap">
+    <p>Avec votre accord, nous mesurons l'audience du site (Google Analytics) et l'efficacité de nos publicités (pixel Meta). Rien n'est déposé sans votre choix. <a href="/confidentialite">En savoir plus</a></p>
+    <div class="choix" hidden>
+      <label><input type="checkbox" name="audience"> Mesure d'audience — Google Analytics</label>
+      <label><input type="checkbox" name="publicite"> Publicité — pixel Meta</label>
+    </div>
+    <div class="boutons">
+      <button type="button" data-choix="refuser">Tout refuser</button>
+      <button type="button" data-choix="accepter">Tout accepter</button>
+      <button type="button" class="discret" data-choix="personnaliser">Personnaliser</button>
+    </div>
+  </div>
+</div>
 
 <div class="barre-achat" aria-hidden="true">
   <p class="ba-prix">129 €<em>Livraison offerte · 30 jours</em></p>
   <a class="cta" data-cta href="#offre" tabindex="-1">Commander</a>
 </div>
 
+<script src="/suivi.js"></script>
 <script>
 // Remplacer par le lien de paiement Stripe une fois créé.
 const LIEN_PAIEMENT = "https://buy.stripe.com/eVq6oH3x56J77n1bNH7ok00";
 document.querySelectorAll("[data-cta]").forEach(function(el){
   if(LIEN_PAIEMENT.indexOf("A_REMPLACER") === -1){ el.href = LIEN_PAIEMENT; }
 });
+
+// Achat : signale le début du paiement à Meta et Google (si consentement).
+document.querySelectorAll("[data-cta]").forEach(function(el){
+  el.addEventListener("click", function(){
+    if(el.href.indexOf("https://buy.stripe.com/") === 0) Suivi.evenement("InitiateCheckout", "begin_checkout");
+  });
+});
+
+// Bandeau de consentement. Ajouter ?bandeau à l'adresse pour l'afficher avant d'avoir les identifiants.
+(function(){
+  if(!Suivi.configure && !/[?&]bandeau\b/.test(location.search)) return;
+  var bandeau = document.querySelector(".consentement");
+  var choix = bandeau.querySelector(".choix");
+  var personnaliser = bandeau.querySelector('[data-choix="personnaliser"]');
+  var lienGerer = document.querySelector(".lien-cookies");
+  var cases = { audience: choix.querySelector('[name="audience"]'), publicite: choix.querySelector('[name="publicite"]') };
+
+  function effacerCookies(){
+    var domaine = location.hostname.replace(/^www\./, "");
+    document.cookie.split(";").forEach(function(c){
+      var nom = c.split("=")[0].trim();
+      if(!/^(_ga|_gid|_fbp|_fbc)/.test(nom)) return;
+      document.cookie = nom + "=; max-age=0; path=/";
+      document.cookie = nom + "=; max-age=0; path=/; domain=." + domaine;
+    });
+  }
+  function enregistrer(c){
+    var avant = Suivi.consentement();
+    Suivi.enregistrer(c);
+    bandeau.hidden = true;
+    if(!avant){ Suivi.activer(c); return; }
+    if(avant.audience === c.audience && avant.publicite === c.publicite) return;
+    if((avant.audience && !c.audience) || (avant.publicite && !c.publicite)) effacerCookies();
+    location.reload();
+  }
+  function ouvrirChoix(){
+    choix.hidden = false;
+    personnaliser.textContent = "Enregistrer mes choix";
+  }
+
+  bandeau.addEventListener("click", function(e){
+    var b = e.target.closest("[data-choix]");
+    if(!b) return;
+    var action = b.getAttribute("data-choix");
+    if(action === "refuser") enregistrer({ audience: false, publicite: false });
+    else if(action === "accepter") enregistrer({ audience: true, publicite: true });
+    else if(choix.hidden) ouvrirChoix();
+    else enregistrer({ audience: cases.audience.checked, publicite: cases.publicite.checked });
+  });
+  lienGerer.hidden = false;
+  lienGerer.addEventListener("click", function(){
+    var c = Suivi.consentement() || { audience: false, publicite: false };
+    cases.audience.checked = c.audience;
+    cases.publicite.checked = c.publicite;
+    ouvrirChoix();
+    bandeau.hidden = false;
+  });
+
+  var existant = Suivi.consentement();
+  if(existant) Suivi.activer(existant); else bandeau.hidden = false;
+})();
 
 // Barre d'achat mobile : visible une fois le CTA du hero dépassé, masquée sur l'offre.
 (function(){

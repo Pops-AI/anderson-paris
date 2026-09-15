@@ -5,13 +5,21 @@
 ## Chantier en cours
 
 Livraison étendue au Luxembourg : terminé (hero, FAQ, CGV articles 3 et 5).
-Délai provisoire identique pour les quatre pays : 4 à 7 jours ouvrés (Suisse : hors dédouanement).
-Délais réels par pays à obtenir : les reporter ensuite dans le tableau CGV article 5 ET la FAQ de index.html.
+Délai retenu pour les quatre pays : 4 à 7 jours ouvrés (Suisse : hors dédouanement). Décision définitive.
 
-À compléter avant la première vente (valeurs à demander, jamais à inventer) :
-- Pied de page de index.html : « SIREN [à compléter] — [adresse à compléter] ». Les vraies valeurs sont dans mentions-legales.html.
-- mentions-legales.html : téléphone, adresse Vercel, médiateur de la consommation, IDU DEEE et IDU batteries.
-- cgv.html article 5 : entrepôt d'expédition réel.
+Suivi des ventes pour les publicités : code prêt, en attente de configuration.
+- Bandeau de consentement (index.html) + Google Analytics + pixel Meta (suivi.js).
+- Page /merci : achat envoyé à Google Analytics uniquement.
+- Achats vers Meta : application Stripe installée par la gérance. Ne jamais renvoyer l'événement Purchase
+  à Meta depuis le site (double comptage).
+À fournir, jamais à inventer :
+- `ID_GOOGLE_ANALYTICS` et `ID_PIXEL_META` dans suivi.js (tant qu'ils valent « A_REMPLACER », rien ne se charge).
+- Nom de l'application Stripe, données qu'elle transmet à Meta et respect du refus des cookies :
+  à reporter dans confidentialite.html (ligne « Mesure des achats publicitaires »).
+- Stripe (après mise en ligne de /merci) : redirection du lien de paiement vers
+  https://andersonparis.fr/merci?session_id={CHECKOUT_SESSION_ID}.
+
+Mis de côté volontairement : téléphone, adresse Vercel, médiateur, IDU (mentions-legales.html) et entrepôt d'expédition (CGV article 5, ne pas le mentionner).
 
 ## Règles de contenu — non négociables
 
@@ -28,7 +36,8 @@ Délais réels par pays à obtenir : les reporter ensuite dans le tableau CGV ar
 
 Toute modification du prix, des délais, de la durée du rituel ou des
 garanties doit être répercutée sur index.html ET cgv.html ET
-retractation.html ET mentions-legales.html.
+retractation.html ET mentions-legales.html ET merci.html.
+Le prix est aussi dans suivi.js (`PRIX`, valeur envoyée à Meta et Google).
 Mettre aussi à jour l'objet REFERENCE en tête de scripts/verifier.mjs.
 Commande dédiée : /changer-valeur.
 
@@ -48,7 +57,9 @@ la page à 400 px et à 1280 px de large.
 - Mention de Lumina Pro, 630 nm, 8000 RPM ou du visage entier -> BLOQUANT
 - Prix, délai, durée du rituel ou garantie modifié sur une page sans les autres -> BLOQUANT
 - `border-radius` non nul, couleur hors palette, police autre que Bodoni Moda / Jost -> BLOQUANT
-- Framework, dépendance npm, script tiers ou tracker ajouté -> BLOQUANT
+- Framework, dépendance npm ou script tiers ajouté -> BLOQUANT
+- Tracker chargé hors du bandeau de consentement, ou sans mise à jour de confidentialite.html -> BLOQUANT
+- Donnée envoyée à Meta ou Google depuis le site sans consentement -> BLOQUANT
 - Lien de paiement Stripe modifié ou supprimé -> CRITICAL, à signaler explicitement
 - Clé, token ou secret en clair -> CRITICAL
 - `node scripts/verifier.mjs` en erreur -> BLOQUANT
