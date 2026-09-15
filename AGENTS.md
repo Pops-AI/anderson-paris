@@ -23,7 +23,7 @@ Ne pas confondre avec « Lumina Pro », ancien produit abandonné
 |---|---|
 | Pages | HTML statique, aucun framework, aucune dépendance |
 | Styles | CSS inline dans index.html ; style.css partagé par les pages légales |
-| Script | `suivi.js` (Google Analytics + pixel Meta, soumis au consentement) + un `<script>` en bas de index.html (lien Stripe, bandeau, barre d'achat mobile) et de merci.html (achat) |
+| Script | `suivi.js` (PostHog, Google Analytics et pixel Meta, soumis au consentement) + un `<script>` en bas de index.html (lien Stripe, bandeau, barre d'achat mobile) et de merci.html (achat) |
 | Polices | Google Fonts : Bodoni Moda (titres), Jost 300 (texte) |
 | Paiement | Stripe Payment Link, retour sur /merci. Pas de panier, pas de back-end. Achats transmis à Meta par une application Stripe |
 | Hébergement | Vercel, `cleanUrls` (/cgv sert cgv.html), déploiement auto à chaque push |
