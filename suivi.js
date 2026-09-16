@@ -1,13 +1,13 @@
-// Traceurs Google Analytics, PostHog et pixel Meta, partagés par index.html et merci.html.
-// Rien ne se charge tant qu'un identifiant vaut A_REMPLACER, ni sans le consentement donné dans le bandeau.
+// Traceurs PostHog et pixel Meta, partagés par index.html et merci.html.
+// PostHog remplace Google Analytics : mesure d'audience, heatmaps et
+// enregistrements de session dans un seul outil, hébergé dans l'UE.
+// Rien ne se charge sans le consentement donné dans le bandeau.
 var Suivi = (function(){
-  var ID_GOOGLE_ANALYTICS = "A_REMPLACER";
   var ID_POSTHOG = "phc_tKVSrAT4x6bARoM6F2t93CdSpzHonhNtuoETMmSe27qM";
   var HOTE_POSTHOG = "https://eu.i.posthog.com";
   var ID_PIXEL_META = "1660164462081161";
   var PRIX = 129;
   var CLE = "ap-consentement", SIX_MOIS = 182 * 24 * 3600 * 1000;
-  var ga = ID_GOOGLE_ANALYTICS.indexOf("A_REMPLACER") === -1;
   var posthog = ID_POSTHOG.indexOf("A_REMPLACER") === -1;
   var meta = ID_PIXEL_META.indexOf("A_REMPLACER") === -1;
   var actif = { audience: false, posthog: false, publicite: false };
@@ -61,14 +61,6 @@ var Suivi = (function(){
     }
   }
   function activer(c){
-    if(c.audience && ga && !actif.audience){
-      actif.audience = true;
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = function(){ dataLayer.push(arguments); };
-      gtag("js", new Date());
-      gtag("config", ID_GOOGLE_ANALYTICS, { cookie_expires: 395 * 24 * 3600 });
-      charger("https://www.googletagmanager.com/gtag/js?id=" + ID_GOOGLE_ANALYTICS);
-    }
     if(c.audience && posthog && !actif.posthog){
       actif.posthog = true;
       chargerPostHog();
@@ -84,23 +76,18 @@ var Suivi = (function(){
       fbq("track", "PageView");
     }
   }
-  // nomMeta vide : rien n'est envoyé à Meta. idCommande permet à Google de ne compter un achat qu'une fois.
-  function evenement(nomMeta, nomGoogle, idCommande){
+  // nomMeta vide : rien n'est envoyé à Meta. idCommande déduplique l'achat.
+  function evenement(nomMeta, nomEvenement, idCommande){
     if(actif.publicite && nomMeta){
       fbq("track", nomMeta, { value: PRIX, currency: "EUR", content_ids: ["lumina-regard"], content_type: "product" }, idCommande ? { eventID: idCommande } : {});
-    }
-    if(actif.audience){
-      var donnees = { currency: "EUR", value: PRIX, items: [{ item_id: "lumina-regard", item_name: "Lumina Regard", price: PRIX, quantity: 1 }] };
-      if(idCommande) donnees.transaction_id = idCommande;
-      gtag("event", nomGoogle, donnees);
     }
     // PostHog reçoit le même signal, avec store_id pour séparer les boutiques.
     // L'achat confirmé vient du webhook Stripe côté serveur ; celui-ci n'est
     // qu'un signal de navigation et porte $insert_id pour être dédupliqué.
     if(actif.posthog && window.posthog && window.posthog.capture){
       var props = { store_id: "anderson-paris", value: PRIX, currency: "EUR", product_id: "lumina-regard" };
-      if(idCommande){ props.order_id = idCommande; props.$insert_id = nomGoogle + ":" + idCommande; }
-      window.posthog.capture(nomGoogle, props);
+      if(idCommande){ props.order_id = idCommande; props.$insert_id = nomEvenement + ":" + idCommande; }
+      window.posthog.capture(nomEvenement, props);
     }
   }
   // Vue de la fiche produit — PostHog uniquement. Rejouée si le consentement
@@ -118,7 +105,7 @@ var Suivi = (function(){
     });
   }
   return {
-    configure: ga || posthog || meta,
+    configure: posthog || meta,
     consentement: consentement,
     enregistrer: enregistrer,
     activer: activer,
