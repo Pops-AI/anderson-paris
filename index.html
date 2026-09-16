@@ -457,6 +457,13 @@ footer{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
   .offre-grille{gap:32px}
   .coffret li span{white-space:nowrap}
   .barre-achat .cta{flex:1 1 auto;margin-left:0;padding:16px}
+  /* La barre fixe recouvre le bas de page : on libere sa hauteur. */
+  body{padding-bottom:88px}
+  .barre-achat .ba-prix{font-size:18px;white-space:nowrap}
+  .barre-achat .ba-prix em{font-size:11px;display:block;margin-top:2px}
+  /* Cibles tactiles : 44 px minimum sous le doigt. */
+  details summary{min-height:44px;display:flex;align-items:center}
+  .liens a,footer a{display:inline-block;padding:6px 0}
 }
 </style>
 </head>
