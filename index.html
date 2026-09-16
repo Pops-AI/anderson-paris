@@ -457,6 +457,13 @@ footer{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
   .offre-grille{gap:32px}
   .coffret li span{white-space:nowrap}
   .barre-achat .cta{flex:1 1 auto;margin-left:0;padding:16px}
+  /* La barre fixe recouvre le bas de page : on libere sa hauteur. */
+  body{padding-bottom:88px}
+  .barre-achat .ba-prix{font-size:18px;white-space:nowrap}
+  .barre-achat .ba-prix em{font-size:11px;display:block;margin-top:2px}
+  /* Cibles tactiles : 44 px minimum sous le doigt. */
+  details summary{min-height:44px;display:flex;align-items:center}
+  .liens a,footer a{display:inline-block;padding:6px 0}
 }
 </style>
 </head>
@@ -771,7 +778,7 @@ footer{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
 
 <div class="barre-achat" aria-hidden="true">
   <div class="wrap">
-    <p class="ba-prix">129 €<em>43 € × 3 · livraison offerte</em></p>
+    <p class="ba-prix">129 €<em>43 € × 3 · 30 jours pour changer d'avis</em></p>
     <a class="cta" data-cta href="#offre" tabindex="-1">Commander</a>
   </div>
 </div>
@@ -988,6 +995,66 @@ Suivi.vueProduit();
   new IntersectionObserver(function(e){
     offreVisible = e[0].isIntersecting; maj();
   }).observe(offre);
+})();
+
+// Mesure du parcours. Sans ces trois signaux, on ignore si les visiteuses
+// descendent jusqu'a l'offre, combien partent vers le paiement, et quelle
+// question les retient. C'est ce qui manque pour diagnostiquer une page qui
+// ne convertit pas.
+(function(){
+  function envoyer(nom, props){
+    if(window.posthog && posthog.capture){
+      posthog.capture(nom, Object.assign({ store_id: "anderson-paris" }, props || {}));
+    }
+  }
+
+  // Profondeur de defilement, envoyee une seule fois par palier.
+  var paliers = [25, 50, 75, 100], atteints = {};
+  function scroll(){
+    var d = document.documentElement;
+    var h = d.scrollHeight - window.innerHeight;
+    if(h <= 0) return;
+    var pct = Math.round((window.scrollY / h) * 100);
+    paliers.forEach(function(p){
+      if(pct >= p && !atteints[p]){ atteints[p] = true; envoyer("scroll_depth", { depth: p }); }
+    });
+  }
+  var attente = false;
+  window.addEventListener("scroll", function(){
+    if(attente) return;
+    attente = true;
+    setTimeout(function(){ scroll(); attente = false; }, 400);
+  }, { passive: true });
+
+  // Depart vers le paiement Stripe : on nomme la zone d'ou vient le clic.
+  document.addEventListener("click", function(ev){
+    var a = ev.target && ev.target.closest ? ev.target.closest("[data-cta]") : null;
+    if(!a) return;
+    var zone = "page";
+    if(a.closest(".barre-achat")) zone = "barre-fixe";
+    else if(a.closest(".hero")) zone = "hero";
+    else if(a.closest("#offre")) zone = "offre";
+    envoyer("checkout_started", { zone: zone, value: 129, currency: "EUR" });
+  }, true);
+
+  // Questions ouvertes : l'objection reelle des visiteuses.
+  document.querySelectorAll("details summary").forEach(function(s){
+    s.addEventListener("click", function(){
+      var d = s.parentElement;
+      if(d && !d.open){
+        envoyer("faq_ouverte", { question: (s.textContent || "").trim().slice(0, 90) });
+      }
+    });
+  });
+
+  // Vue de la section offre : combien de personnes voient reellement le prix.
+  var offre = document.getElementById("offre");
+  if(offre && "IntersectionObserver" in window){
+    var vu = false;
+    new IntersectionObserver(function(e){
+      if(e[0].isIntersecting && !vu){ vu = true; envoyer("offre_vue", {}); }
+    }, { threshold: 0.4 }).observe(offre);
+  }
 })();
 </script>
 </body>
