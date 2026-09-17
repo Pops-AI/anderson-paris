@@ -24,17 +24,26 @@ var Suivi = (function(){
   function charger(src){
     var s = document.createElement("script"); s.async = true; s.src = src; document.head.appendChild(s);
   }
-  // PostHog : chargement direct, sans npm ni bundler. Le tableau `_i` met en file
-  // les appels émis avant l'arrivée du script, puis la librairie les rejoue.
+  // PostHog : chargement direct, sans npm ni bundler.
+  // Deux files distinctes, imposées par array.js :
+  //   `_i`  reçoit UNE entrée [jeton, configuration, nom] — la librairie la relit
+  //         pour appeler init() avec la bonne signature ;
+  //   `p`   lui-même reçoit les appels [methode, arguments...] émis avant l'arrivée
+  //         du script, rejoués ensuite par _execute_array().
+  // Mettre init() dans `_i` au même format que les autres méthodes ferait arriver
+  // le jeton à la place de la configuration : la librairie lèverait une exception
+  // et pas un seul événement ne partirait.
   function chargerPostHog(){
     var p = window.posthog = window.posthog || [];
     if(p.__loaded) return;
     p._i = p._i || [];
-    "init capture identify register reset opt_in_capturing opt_out_capturing".split(" ").forEach(function(m){
-      p[m] = p[m] || function(){ p._i.push([m].concat([].slice.call(arguments))); };
+    p.people = p.people || [];
+    p.__SV = 1;
+    "capture identify register reset opt_in_capturing opt_out_capturing".split(" ").forEach(function(m){
+      p[m] = p[m] || function(){ p.push([m].concat([].slice.call(arguments))); };
     });
     charger(HOTE_POSTHOG + "/static/array.js");
-    p.init(ID_POSTHOG, {
+    p._i.push([ID_POSTHOG, {
       api_host: HOTE_POSTHOG,
       person_profiles: "identified_only",
       persistence: "localStorage+cookie",
@@ -51,7 +60,7 @@ var Suivi = (function(){
       },
       capture_pageview: true,
       disable_surveys: true
-    });
+    }, "posthog"]);
   }
   // Coupe PostHog quand la cliente retire son consentement : l'appel efface aussi
   // les identifiants stockés côté navigateur.
