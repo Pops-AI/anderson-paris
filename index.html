@@ -945,8 +945,21 @@ Suivi.vueProduit();
     bandeau.hidden = true;
     if(!avant){ Suivi.activer(c); return; }
     if(avant.audience === c.audience && avant.publicite === c.publicite) return;
-    if(avant.audience && !c.audience) Suivi.couper();
-    if((avant.audience && !c.audience) || (avant.publicite && !c.publicite)) effacerCookies();
+    var retraitAudience = avant.audience && !c.audience;
+    if(retraitAudience) Suivi.couper();
+    // Le nettoyage est differe d'un tick : array.js reecrit le cookie ph_ juste
+    // apres opt_out_capturing(), et un effacement synchrone passerait avant lui.
+    // Suivi.purger() retire aussi les cles PostHog de localStorage, que le simple
+    // effacement des cookies laissait en place (Suivi.activer le rejoue au
+    // chargement suivant, par securite).
+    if(retraitAudience || (avant.publicite && !c.publicite)){
+      setTimeout(function(){
+        effacerCookies();
+        if(retraitAudience) Suivi.purger();
+        location.reload();
+      }, 0);
+      return;
+    }
     location.reload();
   }
   function ouvrirChoix(){
