@@ -16,10 +16,10 @@
 <meta property="og:site_name" content="Anderson Paris">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="/images/favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="image" href="/images/lumina-regard-champagne.jpg" fetchpriority="high">
-<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="preload" as="font" type="font/woff2" href="/polices/bodoni-moda-latin.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="/polices/jost-latin.woff2" crossorigin>
+<link rel="stylesheet" href="/polices/polices.css">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -783,7 +783,7 @@ footer{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
   </div>
 </div>
 
-<script src="/suivi.js" defer></script>
+<script src="/suivi.js"></script>
 <script>
 // Remplacer par le lien de paiement Stripe une fois créé.
 const LIEN_PAIEMENT = "https://buy.stripe.com/eVq6oH3x56J77n1bNH7ok00";
