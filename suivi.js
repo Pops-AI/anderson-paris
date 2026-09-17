@@ -87,6 +87,14 @@ var Suivi = (function(){
       });
     }catch(e){}
   }
+  // Reprend la mesure apres un retrait : opt_out_capturing() ecrit un refus
+  // persistant (__ph_opt_in_out_…), que le seul chargement de la librairie ne leve
+  // pas. Sans cet appel, PostHog se charge mais n'emet plus rien. L'appel passe par
+  // la file d'array.js quand la librairie n'est pas encore arrivee.
+  // captureEventName: false — pas d'evenement $opt_in a chaque page.
+  function reprendrePostHog(){
+    try{ window.posthog.opt_in_capturing({ captureEventName: false }); }catch(e){}
+  }
   function activer(c){
     // Refus (initial ou apres retrait) : on repasse derriere array.js, qui a pu
     // reecrire le cookie ph_ juste avant le rechargement precedent.
@@ -94,6 +102,7 @@ var Suivi = (function(){
     if(c.audience && posthog && !actif.posthog){
       actif.posthog = true;
       chargerPostHog();
+      reprendrePostHog();
       setTimeout(envoyerVueProduit, 600);
     }
     if(c.publicite && meta && !actif.publicite){
