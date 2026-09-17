@@ -930,11 +930,13 @@ Suivi.vueProduit();
   var lienGerer = document.querySelector(".lien-cookies");
   var cases = { audience: choix.querySelector('[name="audience"]'), publicite: choix.querySelector('[name="publicite"]') };
 
-  function effacerCookies(){
+  // Le motif restreint l'effacement aux traceurs reellement retires : retirer la
+  // publicite ne doit pas emporter le cookie PostHog d'une audience toujours consentie.
+  function effacerCookies(motif){
     var domaine = location.hostname.replace(/^www\./, "");
     document.cookie.split(";").forEach(function(c){
       var nom = c.split("=")[0].trim();
-      if(!/^(_ga|_gid|_fbp|_fbc|ph_)/.test(nom)) return;
+      if(!motif.test(nom)) return;
       document.cookie = nom + "=; max-age=0; path=/";
       document.cookie = nom + "=; max-age=0; path=/; domain=." + domaine;
     });
@@ -946,15 +948,18 @@ Suivi.vueProduit();
     if(!avant){ Suivi.activer(c); return; }
     if(avant.audience === c.audience && avant.publicite === c.publicite) return;
     var retraitAudience = avant.audience && !c.audience;
+    var retraitPublicite = avant.publicite && !c.publicite;
     if(retraitAudience) Suivi.couper();
     // Le nettoyage est differe d'un tick : array.js reecrit le cookie ph_ juste
     // apres opt_out_capturing(), et un effacement synchrone passerait avant lui.
     // Suivi.purger() retire aussi les cles PostHog de localStorage, que le simple
     // effacement des cookies laissait en place (Suivi.activer le rejoue au
     // chargement suivant, par securite).
-    if(retraitAudience || (avant.publicite && !c.publicite)){
+    if(retraitAudience || retraitPublicite){
+      var motif = retraitAudience && retraitPublicite ? /^(_ga|_gid|_fbp|_fbc|ph_)/
+                : retraitAudience ? /^(_ga|_gid|ph_)/ : /^(_fbp|_fbc)/;
       setTimeout(function(){
-        effacerCookies();
+        effacerCookies(motif);
         if(retraitAudience) Suivi.purger();
         location.reload();
       }, 0);
