@@ -69,10 +69,40 @@ var Suivi = (function(){
       try{ window.posthog.opt_out_capturing(); }catch(e){}
     }
   }
+  // Efface toute trace laissee par PostHog dans le navigateur : cookie ph_… porteur
+  // du distinct_id (12 mois) et les cles jumelles de localStorage. opt_out_capturing()
+  // ne les retire pas, et array.js reecrit le cookie apres coup : la purge est donc
+  // rejouee au chargement suivant tant que la mesure d'audience est refusee.
+  function purgerPostHog(){
+    var domaine = location.hostname.replace(/^www\./, "");
+    document.cookie.split(";").forEach(function(c){
+      var nom = c.split("=")[0].trim();
+      if(nom.indexOf("ph_") !== 0) return;
+      document.cookie = nom + "=; max-age=0; path=/";
+      document.cookie = nom + "=; max-age=0; path=/; domain=." + domaine;
+    });
+    try{
+      Object.keys(localStorage).forEach(function(k){
+        if(k.indexOf("ph_") === 0 || k.indexOf("__ph_opt_in_out_") === 0) localStorage.removeItem(k);
+      });
+    }catch(e){}
+  }
+  // Reprend la mesure apres un retrait : opt_out_capturing() ecrit un refus
+  // persistant (__ph_opt_in_out_…), que le seul chargement de la librairie ne leve
+  // pas. Sans cet appel, PostHog se charge mais n'emet plus rien. L'appel passe par
+  // la file d'array.js quand la librairie n'est pas encore arrivee.
+  // captureEventName: false — pas d'evenement $opt_in a chaque page.
+  function reprendrePostHog(){
+    try{ window.posthog.opt_in_capturing({ captureEventName: false }); }catch(e){}
+  }
   function activer(c){
+    // Refus (initial ou apres retrait) : on repasse derriere array.js, qui a pu
+    // reecrire le cookie ph_ juste avant le rechargement precedent.
+    if(posthog && !c.audience) purgerPostHog();
     if(c.audience && posthog && !actif.posthog){
       actif.posthog = true;
       chargerPostHog();
+      reprendrePostHog();
       setTimeout(envoyerVueProduit, 600);
     }
     if(c.publicite && meta && !actif.publicite){
@@ -119,6 +149,7 @@ var Suivi = (function(){
     enregistrer: enregistrer,
     activer: activer,
     couper: couperPostHog,
+    purger: purgerPostHog,
     vueProduit: vueProduit,
     evenement: evenement
   };
