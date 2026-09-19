@@ -1,5 +1,5 @@
 // Traceurs PostHog et pixel Meta, partagés par index.html et merci.html.
-// PostHog remplace Google Analytics : mesure d'audience, heatmaps et
+// PostHog est la seule mesure d'audience du site : visites, heatmaps et
 // enregistrements de session dans un seul outil, hébergé dans l'UE.
 // Rien ne se charge sans le consentement donné dans le bandeau.
 var Suivi = (function(){
@@ -8,8 +8,6 @@ var Suivi = (function(){
   var ID_PIXEL_META = "1660164462081161";
   var PRIX = 129;
   var CLE = "ap-consentement", SIX_MOIS = 182 * 24 * 3600 * 1000;
-  var posthog = ID_POSTHOG.indexOf("A_REMPLACER") === -1;
-  var meta = ID_PIXEL_META.indexOf("A_REMPLACER") === -1;
   var actif = { audience: false, posthog: false, publicite: false };
   var vueEnAttente = false;
 
@@ -98,14 +96,14 @@ var Suivi = (function(){
   function activer(c){
     // Refus (initial ou apres retrait) : on repasse derriere array.js, qui a pu
     // reecrire le cookie ph_ juste avant le rechargement precedent.
-    if(posthog && !c.audience) purgerPostHog();
-    if(c.audience && posthog && !actif.posthog){
+    if(!c.audience) purgerPostHog();
+    if(c.audience && !actif.posthog){
       actif.posthog = true;
       chargerPostHog();
       reprendrePostHog();
       setTimeout(envoyerVueProduit, 600);
     }
-    if(c.publicite && meta && !actif.publicite){
+    if(c.publicite && !actif.publicite){
       actif.publicite = true;
       var f = window.fbq = function(){ f.callMethod ? f.callMethod.apply(f, arguments) : f.queue.push(arguments); };
       if(!window._fbq) window._fbq = f;
@@ -144,7 +142,7 @@ var Suivi = (function(){
     });
   }
   return {
-    configure: posthog || meta,
+    configure: true,
     consentement: consentement,
     enregistrer: enregistrer,
     activer: activer,
