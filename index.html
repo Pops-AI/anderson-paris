@@ -785,10 +785,10 @@ footer{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
 
 <script src="/suivi.js"></script>
 <script>
-// Remplacer par le lien de paiement Stripe une fois créé.
+// Lien de paiement Stripe : seule adresse d'achat, jamais collée dans le HTML.
 const LIEN_PAIEMENT = "https://buy.stripe.com/eVq6oH3x56J77n1bNH7ok00";
 document.querySelectorAll("[data-cta]").forEach(function(el){
-  if(LIEN_PAIEMENT.indexOf("A_REMPLACER") === -1){ el.href = LIEN_PAIEMENT; }
+  el.href = LIEN_PAIEMENT;
 });
 
 // Photo avant / après : déposer le fichier dans /images puis indiquer son adresse ici pour afficher le bloc.
