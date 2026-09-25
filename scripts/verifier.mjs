@@ -13,7 +13,7 @@ const MODE_HOOK = process.argv.includes("--hook");
 const REFERENCE = {
   prix: 129,
   pays: ["France", "Belgique", "Luxembourg", "Suisse"],
-  delai: "4 à 10 jours ouvrés",
+  delai: "12 à 15 jours ouvrés",
 };
 
 const PAGES = ["index.html", "cgv.html", "retractation.html", "mentions-legales.html", "confidentialite.html", "merci.html", "guide-rituel.html", "guide-serums.html", "calendrier-rituel.html"];
