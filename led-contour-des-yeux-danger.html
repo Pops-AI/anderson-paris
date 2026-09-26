@@ -155,7 +155,111 @@
 <a href="/confidentialite">Confidentialité</a>
 <a href="/retractation">Rétractation et retours</a>
 <a href="mailto:contact@andersonparis.fr">contact@andersonparis.fr</a>
+<button type="button" class="lien-cookies" hidden>Gérer les cookies</button>
 </div>
 <p>Anderson Paris — nom commercial de Mohamed-Rayane BAROUDI EI — SIRET 993 868 421 00013 — © 2026.</p>
 </div></footer>
+<style>
+/* bandeau de consentement — copie du bloc d'index.html (extraction commune : t_4a801204) */
+[hidden]{display:none!important}
+.lien-cookies{background:none;border:none;border-bottom:1px solid #46433F;color:#C8C0B6;font:inherit;cursor:pointer;padding:0}
+.lien-cookies:hover{color:var(--rose)}
+.consentement{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:70;width:calc(100% - 32px);max-width:380px;background:var(--papier);border:1px solid var(--ligne);padding:16px 18px}
+.consentement p{font-size:13px;line-height:1.55;margin-bottom:12px}
+.consentement p a{color:var(--encre);text-decoration:none;border-bottom:1px solid var(--rose)}
+.consentement .choix{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;font-size:13px}
+.consentement label{display:flex;align-items:center;gap:10px;cursor:pointer}
+.consentement input{accent-color:var(--anthracite)}
+.consentement .boutons{display:flex;flex-wrap:wrap;gap:8px}
+.consentement button{font-family:var(--sans);font-weight:400;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:10px 14px;min-height:40px;cursor:pointer;background:var(--anthracite);color:var(--albatre);border:1px solid var(--anthracite)}
+.consentement button.secondaire{background:none;color:#7E766C;border-color:var(--ligne)}
+.consentement button.discret{background:none;border-color:transparent;color:#8A8179;text-decoration:underline;text-transform:none;letter-spacing:0;padding:10px 6px}
+.consentement button:hover{border-color:var(--rose)}
+</style>
+
+<div class="consentement" role="dialog" aria-label="Choix des cookies" hidden>
+  <p>Nous mesurons l'audience du site et l'efficacité de nos publicités. Rien n'est déposé sans votre choix. <a href="/confidentialite">En savoir plus</a></p>
+  <div class="choix" hidden>
+    <label><input type="checkbox" name="audience"> Mesure d'audience — PostHog</label>
+    <label><input type="checkbox" name="publicite"> Publicité — pixel Meta</label>
+  </div>
+  <div class="boutons">
+    <button type="button" data-choix="accepter">Tout accepter</button>
+    <button type="button" class="secondaire" data-choix="refuser">Tout refuser</button>
+    <button type="button" class="discret" data-choix="personnaliser">Personnaliser</button>
+  </div>
+</div>
+
+<script src="/suivi.js"></script>
+<script>
+// Bandeau de consentement. Ajouter ?bandeau à l'adresse pour l'afficher avant d'avoir les identifiants.
+(function(){
+  if(!Suivi.configure && !/[?&]bandeau\b/.test(location.search)) return;
+  var bandeau = document.querySelector(".consentement");
+  var choix = bandeau.querySelector(".choix");
+  var personnaliser = bandeau.querySelector('[data-choix="personnaliser"]');
+  var lienGerer = document.querySelector(".lien-cookies");
+  var cases = { audience: choix.querySelector('[name="audience"]'), publicite: choix.querySelector('[name="publicite"]') };
+
+  // Le motif restreint l'effacement aux traceurs reellement retires : retirer la
+  // publicite ne doit pas emporter le cookie PostHog d'une audience toujours consentie.
+  function effacerCookies(motif){
+    var domaine = location.hostname.replace(/^www\./, "");
+    document.cookie.split(";").forEach(function(c){
+      var nom = c.split("=")[0].trim();
+      if(!motif.test(nom)) return;
+      document.cookie = nom + "=; max-age=0; path=/";
+      document.cookie = nom + "=; max-age=0; path=/; domain=." + domaine;
+    });
+  }
+  function enregistrer(c){
+    var avant = Suivi.consentement();
+    Suivi.enregistrer(c);
+    bandeau.hidden = true;
+    if(!avant){ Suivi.activer(c); return; }
+    if(avant.audience === c.audience && avant.publicite === c.publicite) return;
+    var retraitAudience = avant.audience && !c.audience;
+    var retraitPublicite = avant.publicite && !c.publicite;
+    if(retraitAudience) Suivi.couper();
+    // Le nettoyage est differe d'un tick : array.js reecrit le cookie ph_ juste
+    // apres opt_out_capturing(), et un effacement synchrone passerait avant lui.
+    if(retraitAudience || retraitPublicite){
+      var motif = retraitAudience && retraitPublicite ? /^(_ga|_gid|_fbp|_fbc|ph_)/
+                : retraitAudience ? /^(_ga|_gid|ph_)/ : /^(_fbp|_fbc)/;
+      setTimeout(function(){
+        effacerCookies(motif);
+        if(retraitAudience) Suivi.purger();
+        location.reload();
+      }, 0);
+      return;
+    }
+    location.reload();
+  }
+  function ouvrirChoix(){
+    choix.hidden = false;
+    personnaliser.textContent = "Enregistrer mes choix";
+  }
+
+  bandeau.addEventListener("click", function(e){
+    var b = e.target.closest("[data-choix]");
+    if(!b) return;
+    var action = b.getAttribute("data-choix");
+    if(action === "refuser") enregistrer({ audience: false, publicite: false });
+    else if(action === "accepter") enregistrer({ audience: true, publicite: true });
+    else if(choix.hidden) ouvrirChoix();
+    else enregistrer({ audience: cases.audience.checked, publicite: cases.publicite.checked });
+  });
+  lienGerer.hidden = false;
+  lienGerer.addEventListener("click", function(){
+    var c = Suivi.consentement() || { audience: false, publicite: false };
+    cases.audience.checked = c.audience;
+    cases.publicite.checked = c.publicite;
+    ouvrirChoix();
+    bandeau.hidden = false;
+  });
+
+  var existant = Suivi.consentement();
+  if(existant) Suivi.activer(existant); else bandeau.hidden = false;
+})();
+</script>
 </body></html>
